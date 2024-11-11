@@ -1,13 +1,21 @@
 # Thin Walls
-Some walls might be too thin to print. In this case the slicer will generate the paths that overlap resulting in over-extrusion.
+Some walls might be too thin to print and even slice. 
 
-Here's an example:
+We have two options to fix this:
+1. Increase the the X-Y Contour Compensation to scale up the model. But it'll make all lines on the model wider and blur the details.
 
-![thin walls](Thin-walls-sliced.png)
+    You also need to watch out for too thin walls that force the slicer to merge two lines together causing the filament to overflow to the sides.
 
-And here's how it looks:
-![Thin walls print fail side](thin-walls-fail-side.png)
-![Thin walls print fail top](thin-walls-fail-top.png)
+    Here's an example:
+
+    ![thin walls](Thin-walls-sliced.png)
+
+    And here's how it looks:
+    ![Thin walls print fail side](thin-walls-fail-side.png)
+    ![Thin walls print fail top](thin-walls-fail-top.png)
+
+    Even with the too low flow rate which is causing under-extrusion artifacts we are getting a lot of excess filament draged around.
+2. Another option is to fix the model! This is probably the best option. But I have no idea how to do it yet...
 
 # Experimenting
 I cut out the problematic part of the model and made an experimental plate with three different settings:

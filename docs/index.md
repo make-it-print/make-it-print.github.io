@@ -8,6 +8,7 @@ Here's my initial setup:
 - Printer: Creality Ender3 V3 CoreXZ
 - Nozzle size: 0.4mm
 - Filament: Creality Hyper PLA
+- Orca Slicer
 
 Goal:
 * Make it print with 0.4mm nozzle and **0.04** layer height and get the best quality possible! 
@@ -18,7 +19,7 @@ Now, a little sneak pick of what can be achieved:
 ![Sneak pick](sneak-pick.png)
 
 # The process
-1. Base setup
+1. [Basic setup](04lh-basics/index.md)
 2. [Calibration](04lh-calibration/index.md)
 3. Slicer Settings
    1. [Thin walls](04lh-slicer-settings-thin-walls/index.md)

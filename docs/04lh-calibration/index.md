@@ -16,22 +16,7 @@ Here's a quote from [Creality's documentation](https://wiki.creality.com/en/soft
 So, knowing that we'll have to do an almost full recalibration using the selected filament and our target layer height:
 1. Flow
 2. Pressure Advance
-3. And maybe temperature
+3. PID and maybe filament temperature
+4. Shapers
+5. Retraction
 
-## Flow
-I decided to use the new flow test provided by Orca slicer called YOLO Flow test.
-
-![YOLO Flow test](yolo-flow-test.png)
-
-Created a new project and generated flow test plate using the 0.04 layer height printer, filament and process profiles.
-
-The test generator has reset layer height settings back to 0.2, so I reverted them.
-
-![Flow test plate](yolo-flow-test-plate.png)
-
-Oops, my first run showed me that I have pretty significant under-extrusion:
-![Flow test fail](yolo-flow-test-fail.png)
-
-That's because I manually lowered the flow rate during my initial experiments while fighting with various over extrusion issues caused by other things.
-
-Let's increase the flow rate from 0.93 to 1.03 and redo the test. Why 1.03, because we alredy know that 0.93 + 0.05 looks bad, so we need to double the offset to see the whole new range of values.
