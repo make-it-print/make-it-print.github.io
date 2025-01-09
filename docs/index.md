@@ -1,3 +1,12 @@
+# WARNING
+Work in progress! At the current state it's just a collection of random observations.
+
+# Contants
+1. Observations log
+1. [Useful resources](useful-resources/index.md)
+1. Checklists
+   1. [Nozzle change](checklists/nozzle-change.md)
+
 # Printing Miniatures
 
 Miniatures require crazy precision from your printer to be able to print out all the tiny details. Pretty good looking results can be achieved by using the smallest nozzle size and layer height possible.
@@ -18,7 +27,7 @@ Goal:
 Now, a little sneak pick of what can be achieved:
 ![Sneak pick](sneak-pick.png)
 
-# The process
+## The process
 1. [Basic setup](04lh-basics/index.md)
 2. [Calibration](04lh-calibration/index.md)
 3. Slicer Settings
