@@ -8,3 +8,8 @@
 # Good to know
 1. [Flow Math] (https://manual.slic3r.org/advanced/flow-math)
 2. [Ellis' Misconceptions & Bad Advice](https://ellis3dp.com/Print-Tuning-Guide/articles/misconceptions.html#you-shouldnt-tune-extrusion-multiplier-the-slicer-knows-best)
+
+# CAD
+1. [OpenSCAD Tip & Tricks] (https://www.tridimake.com/2014/09/how-to-use-openscad-tricks-and-tips-to.html)
+1. [OpenSCAD Documentation] (https://openscad.org/documentation-articles.html)
+2. [OpenSCAD chit-sheet] (https://openscad.org/cheatsheet/index.html)
