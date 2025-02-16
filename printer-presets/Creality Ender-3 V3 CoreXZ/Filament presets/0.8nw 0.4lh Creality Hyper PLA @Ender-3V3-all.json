@@ -1,0 +1,37 @@
+{
+    "adaptive_pressure_advance_model": [
+        "0.036,33.34,5000\n0.036,23.82,5000\n0.043,7.939,5000\n0.045,2.38,5000"
+    ],
+    "additional_cooling_fan_speed": [
+        "100"
+    ],
+    "enable_pressure_advance": [
+        "1"
+    ],
+    "filament_cost": [
+        "250"
+    ],
+    "filament_flow_ratio": [
+        "0.94"
+    ],
+    "filament_settings_id": [
+        "0.8nw 0.4lh Creality Hyper PLA @Ender-3V3-all"
+    ],
+    "from": "User",
+    "inherits": "Creality Generic PLA High Speed @Ender-3V3-all",
+    "is_custom_defined": "0",
+    "name": "0.8nw 0.4lh Creality Hyper PLA @Ender-3V3-all",
+    "pressure_advance": [
+        "0.009"
+    ],
+    "slow_down_for_layer_cooling": [
+        "0"
+    ],
+    "textured_plate_temp": [
+        "65"
+    ],
+    "textured_plate_temp_initial_layer": [
+        "65"
+    ],
+    "version": "2.2.0.4"
+}

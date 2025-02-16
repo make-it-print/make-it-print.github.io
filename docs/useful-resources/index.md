@@ -4,6 +4,7 @@
 3. [44 Common 3D Print Problems](https://www.3dsourced.com/rigid-ink/ultimate-3d-printing-troubleshooting-guide/)
 4. [Simplify 3D Print Quality Troubleshooting Guide](https://www.simplify3d.com/resources/print-quality-troubleshooting/)
 4. [Input Shaper Calibration Tool](https://github.com/Frix-x/klippain-shaketune/blob/main/docs/README.md)
+4. [Small Area Flow Compensation](https://www.printables.com/model/904788-small-area-flow-compensation-tester)
 
 # Good to know
 1. [Flow Math] (https://manual.slic3r.org/advanced/flow-math)
