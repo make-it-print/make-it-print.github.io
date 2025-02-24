@@ -1,3 +1,33 @@
+use <X-Wing Box Slide Clamp.scad>
+
+module place_wall_mounts_x(box_width, box_depth, box_height, depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2)
+{
+  translate([0, box_depth / 2, box_height]) {
+    rotate(180, [0, 0, 1]) {
+      children(0);
+    }
+
+    translate([box_width, 0, 0]) {
+      children(0);
+    }
+  }
+}
+
+module place_wall_mounts_y(box_width, box_depth, box_height, depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2)
+{
+  translate([box_width / 2, 0, box_height]) {
+    rotate(-90, [0, 0, 1]) {
+      children(0);
+    }
+
+    translate([0, box_depth, 0]) {
+      rotate(90, [0, 0, 1]) {
+        children(0);
+      }
+    }
+  }
+}
+
 module box_base_shape(width, depth, height, top_radius, bottom_radius) {
   $fn = $preview ? 16 : 64;
 
@@ -38,7 +68,17 @@ module box_base(wall_width = 2, width = 220, depth = 220, height=50, radius=10, 
 }
 
 module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10, tolerance=0.4) {
-  box_base(wall_width, width, depth, height, radius, tolerance, false);
+  difference() {
+    box_base(wall_width, width, depth, height, radius, tolerance, false);
+  
+    place_wall_mounts_x(box_width = width, box_depth = depth, box_height = height + wall_width, wall_thickness = wall_width, tolerance = tolerance) {
+      wall_mount_hole(wall_thickness = wall_width, tolerance = tolerance);
+    }  
+  }
+
+  place_wall_mounts_y(box_width = width, box_depth = depth, box_height = height + wall_width, wall_thickness = wall_width, tolerance = tolerance) {
+    wall_mounted_stopper(wall_thickness = wall_width, tolerance = tolerance);
+  }
 }
 
 module lid(wall_width = 2, width = 220, depth = 220, radius=10, tolerance=0.2) {
