@@ -1,4 +1,5 @@
 use <X-Wing Box Slide Clamp.scad>
+use <X-Wing Box Wall Mounts.scad>
 
 module place_wall_mounts_x(box_width, box_depth, depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2)
 {
