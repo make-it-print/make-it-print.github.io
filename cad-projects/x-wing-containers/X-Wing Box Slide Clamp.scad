@@ -1,4 +1,4 @@
-module clip_holder(depth = 20, wall_thickness = 2, tolerance = 0.1) {
+module clip_holder(depth = 20, wall_thickness = 2, tolerance = 0.2) {
     // hanger
     translate([0, 0, -wall_thickness]) {
       cube(size=[wall_thickness * 1.5, depth, wall_thickness]);
@@ -18,7 +18,7 @@ module clip_holder(depth = 20, wall_thickness = 2, tolerance = 0.1) {
     }
 }
 
-module clip_holder_mount_notches(depth = 20, height = 10, wall_thickness = 2, tolerance = 0.1) {
+module clip_holder_mount_notches(depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2) {
   union() {
     // right
     translate([wall_thickness, 0, -height / 2]) {
@@ -50,7 +50,7 @@ module clip_holder_mount(depth = 20, height = 10, wall_thickness = 2) {
   }
 }
 
-module wall_mounted_clip_holder (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.1) {
+module wall_mounted_clip_holder (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2) {
   translate([-wall_thickness * 1.5, -depth / 2, 0]) {
     difference() {
       union() {
@@ -65,7 +65,20 @@ module wall_mounted_clip_holder (depth = 20, height = 10, wall_thickness = 2, to
   }
 }
 
-module wall_mount_hole (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.1) {
+module base_mounted_clip_holder (depth = 20, wall_thickness = 2, tolerance = 0.2) {
+  translate([-wall_thickness * 1.5, depth / 2, 0]) {
+    rotate(180, [1, 0, 0]) {
+      union() {
+        clip_holder_mount(depth, wall_thickness, wall_thickness);
+        translate([wall_thickness * 2, 0, 0]) {
+          clip_holder(depth, wall_thickness, tolerance);
+        }
+      }  
+    }
+  }
+}
+
+module wall_mount_hole (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2) {
 
   translate([-wall_thickness * 1.5, -depth / 2, tolerance]) {
     difference() {
@@ -78,7 +91,7 @@ module wall_mount_hole (depth = 20, height = 10, wall_thickness = 2, tolerance =
   }
 }
 
-module wall_mounted_stopper (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.1) {
+module wall_mounted_stopper (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2) {
   translate([0, -depth / 2, 0]) {
     baseThickness = wall_thickness + tolerance * 2;
     baseHeight = wall_thickness * 2;
@@ -97,7 +110,7 @@ module wall_mounted_stopper (depth = 20, height = 10, wall_thickness = 2, tolera
   }
 }
 
-module clip(depth = 10, height = 10, wall_thickness = 2, tolerance = 0.1) {
+module clip(depth = 10, height = 10, wall_thickness = 2, tolerance = 0.2) {
   full_height = wall_thickness * 6 + tolerance * 4;
  
   translate([0, -depth/2, -full_height / 2]) {
@@ -137,7 +150,8 @@ depth = 20;
 // !clip_holder_mount(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // !wall_mounted_clip_holder(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // !wall_mounted_stopper(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
-!wall_mount_hole(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
+// !wall_mount_hole(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
+!base_mounted_clip_holder(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 
 if (assembled) {
   wall_mounted_clip_holder(tolerance=tolerance, wall_thickness=wall_thickness, depth=depth);
