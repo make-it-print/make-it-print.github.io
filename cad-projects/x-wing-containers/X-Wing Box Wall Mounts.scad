@@ -58,16 +58,17 @@ module lid_mounted_hinge (depth = 20, height = 10, wall_thickness = 2, tolerance
 }
 
 module wall_mounted_buckle_anchor_notch (height = 10, wall_thickness = 2) {
+  offset = 0.05;
   thickness = wall_thickness * 2;
-  translate([0, 0, 0]) {
+  translate([0, -offset, 0]) {
     linear_extrude(height=height) {
-      polygon(points=[[0,0],[0, wall_thickness],[wall_thickness, 0]], paths=[[0,1,2]]);
+      polygon(points=[[0,0],[0, wall_thickness + offset],[wall_thickness + offset, 0]], paths=[[0,1,2]]);
     }  
   }
 
-  translate([thickness / 2, 0, 0]) {
+  translate([thickness / 2 - offset, -offset, 0]) {
     linear_extrude(height=height) {
-      polygon(points=[[0,0],[wall_thickness, wall_thickness],[wall_thickness, 0]], paths=[[0,1,2]]);
+      polygon(points=[[0,0],[wall_thickness + offset, wall_thickness + offset],[wall_thickness + offset, 0]], paths=[[0,1,2]]);
     }
   }
 }
@@ -113,8 +114,8 @@ module buckle (depth = 6, height = 6, wall_thickness = 2, tolerance = 0.1) {
       cube(size=[thickness, buckleDepth, height * 2 + wall_thickness * 2]);
     }
 
-    translate([-tolerance, -tolerance, 0]) {
-      wall_mounted_buckle_anchor(depth + tolerance, height + tolerance, wall_thickness + tolerance, tolerance);
+    translate([-tolerance/2, -tolerance/2, 0]) {
+      wall_mounted_buckle_anchor(depth + tolerance, height + tolerance, wall_thickness + tolerance/2, tolerance);
     }
 
     translate([-tolerance, 0, height]) {
@@ -130,5 +131,5 @@ depth = 20;
 // !wall_mounted_stopper(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // wall_mounted_hinge(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // lid_mounted_hinge(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
-wall_mounted_buckle_anchor(wall_thickness=wall_thickness, tolerance=tolerance);
-// buckle(wall_thickness=wall_thickness, tolerance=tolerance);
+// wall_mounted_buckle_anchor(wall_thickness=wall_thickness, tolerance=tolerance);
+buckle(wall_thickness=wall_thickness, tolerance=tolerance);
