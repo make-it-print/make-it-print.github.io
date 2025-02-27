@@ -57,18 +57,30 @@ module lid_mounted_hinge (depth = 20, height = 10, wall_thickness = 2, tolerance
   }
 }
 
-module wall_mounted_buckle_anchor_notch (height = 10, wall_thickness = 2) {
-  offset = 0.05;
+module wall_mounted_buckle_anchor_notch_base (height = 10, wall_thickness = 2, tolerance=0.1) {
+  offset = tolerance + 0.05;
   thickness = wall_thickness * 2;
+
   translate([0, -offset, 0]) {
     linear_extrude(height=height) {
-      polygon(points=[[0,0],[0, wall_thickness + offset],[wall_thickness + offset, 0]], paths=[[0,1,2]]);
+      polygon(
+        points=[
+          [0,0],
+          [0, wall_thickness + offset - tolerance],
+          [wall_thickness + offset - tolerance, 0]
+        ], 
+        paths=[[0,1,2]]
+      );
     }  
   }
+}
 
-  translate([thickness / 2 - offset, -offset, 0]) {
-    linear_extrude(height=height) {
-      polygon(points=[[0,0],[wall_thickness + offset, wall_thickness + offset],[wall_thickness + offset, 0]], paths=[[0,1,2]]);
+module wall_mounted_buckle_anchor_notch (height = 10, wall_thickness = 2, tolerance=0.1) {
+  wall_mounted_buckle_anchor_notch_base(height, wall_thickness, tolerance);
+
+  translate([wall_thickness * 2, 0, height]) {
+    rotate(180, [0, 1, 0]) {
+      wall_mounted_buckle_anchor_notch_base(height, wall_thickness, tolerance);  
     }
   }
 }
@@ -80,25 +92,31 @@ module wall_mounted_buckle_anchor (depth = 6, height = 6, wall_thickness = 2, to
 
   difference() {
     union() {
-      translate([0, wall_thickness, 0]) {
-        cube(size=[thickness, anchorBodyDepth, height]);  
+      translate([0, wall_thickness + tolerance / 2, 0]) {
+        cube(size=[thickness, anchorBodyDepth - tolerance, height]);  
       }
     
       translate([0, anchorBodyDepth + wall_thickness, 0]) {
-        wall_mounted_buckle_anchor_notch(height, wall_thickness);
+        wall_mounted_buckle_anchor_notch(height, wall_thickness, tolerance / 2);
       }
     
       translate([thickness, wall_thickness, 0]) {
         rotate(180, [0, 0, 1]) {
-          wall_mounted_buckle_anchor_notch(height, wall_thickness);
+          wall_mounted_buckle_anchor_notch(height, wall_thickness, tolerance / 2);
         }
       }
     }
   
-    translate([0, anchorBodyDepth + wall_thickness * 2 + tolerance, -tolerance]) {
+    negativeOffset = 0.05;
+    translate([0, anchorBodyDepth + wall_thickness * 2 + negativeOffset, -negativeOffset]) {
       rotate(90, [1, 0, 0]) {
-        linear_extrude(height=depth + (wall_thickness + tolerance) * 2) {
-          polygon(points=[[thickness + tolerance,-tolerance],[-tolerance, -tolerance],[thickness + tolerance, thickness + tolerance]], paths=[[0,1,2]]);
+        linear_extrude(height=depth + (wall_thickness + negativeOffset) * 2) {
+          polygon(points=[
+              [thickness + negativeOffset,-negativeOffset], // (1,0)
+              [-negativeOffset - tolerance, -negativeOffset], // (0,0)
+              [thickness + negativeOffset, thickness + negativeOffset + tolerance] // (1,1)
+            ], 
+            paths=[[0,1,2]]);
         }  
       }
     } 
@@ -115,7 +133,7 @@ module buckle (depth = 6, height = 6, wall_thickness = 2, tolerance = 0.1) {
     }
 
     translate([-tolerance/2, -tolerance/2, 0]) {
-      wall_mounted_buckle_anchor(depth + tolerance, height + tolerance, wall_thickness + tolerance/2, tolerance);
+      wall_mounted_buckle_anchor(depth + tolerance, height + tolerance, wall_thickness + tolerance/2, 0);
     }
 
     translate([-tolerance, 0, height]) {
@@ -131,5 +149,8 @@ depth = 20;
 // !wall_mounted_stopper(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // wall_mounted_hinge(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // lid_mounted_hinge(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
-// wall_mounted_buckle_anchor(wall_thickness=wall_thickness, tolerance=tolerance);
+//translate([-2, -7, -7]) {
+//  cube(size=[2, 20, 20]);
+//}
+wall_mounted_buckle_anchor(wall_thickness=wall_thickness, tolerance=tolerance);
 buckle(wall_thickness=wall_thickness, tolerance=tolerance);
