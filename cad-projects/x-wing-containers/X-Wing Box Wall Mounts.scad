@@ -84,7 +84,7 @@ module wall_mounted_buckle_anchor (depth = 6, height = 6, wall_thickness = 2, to
       }
     
       translate([0, anchorBodyDepth + wall_thickness, 0]) {
-        !wall_mounted_buckle_anchor_notch(height, wall_thickness);
+        wall_mounted_buckle_anchor_notch(height, wall_thickness);
       }
     
       translate([thickness, wall_thickness, 0]) {
