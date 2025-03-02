@@ -1,7 +1,7 @@
 use <X-Wing Box Slide Clamp.scad>
 use <X-Wing Box Wall Mounts.scad>
 
-module place_wall_mounts_x(box_width, box_depth, depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2)
+module place_wall_mounts_x(box_width, box_depth)
 {
   translate([0, box_depth / 2, 0]) {
     rotate(180, [0, 0, 1]) {
@@ -14,7 +14,7 @@ module place_wall_mounts_x(box_width, box_depth, depth = 20, height = 10, wall_t
   }
 }
 
-module place_wall_mounts_y(box_width, box_depth, depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2)
+module place_wall_mounts_y(box_width, box_depth)
 {
   translate([box_width / 2, 0, 0]) {
     rotate(-90, [0, 0, 1]) {
@@ -70,18 +70,24 @@ module box_base(wall_width = 2, width = 220, depth = 220, height=50, radius=10, 
 
 module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10, tolerance=0.2) {
   box_base(wall_width, width, depth, height, radius, tolerance, false);
+ 
+  // base mounts
+  place_wall_mounts_x(box_width = width, box_depth = depth) {
+    children(0);
+    children(1);
+  }
   
   translate([0, 0, height + wall_width]) {
-    place_wall_mounts_x(box_width = width, box_depth = depth, wall_thickness = wall_width, tolerance = tolerance) {
-      children(0);
-      children(1);
+    place_wall_mounts_x(box_width = width, box_depth = depth) {
+      children(2);
+      children(3);
     }
   }
 
   translate([0, 0, height + wall_width]) {
-    place_wall_mounts_y(box_width = width, box_depth = depth, wall_thickness = wall_width, tolerance = tolerance) {
-      children(2);
-      children(3);
+    place_wall_mounts_y(box_width = width, box_depth = depth) {
+      children(4);
+      children(5);
     }
   }
 }
@@ -90,17 +96,10 @@ module lid(wall_width = 2, width = 220, depth = 220, radius=10, tolerance=0.2) {
   box_base(wall_width, width, depth, wall_width * 2, radius, tolerance, true);
 
   if ($children > 0) {
-    place_wall_mounts_x(box_width = width, box_depth = depth, wall_thickness = wall_width, tolerance = tolerance) {
+    place_wall_mounts_x(box_width = width, box_depth = depth) {
       children(0);
-    }
-  }
-}
-
-
-module box_clip_holders(wall_width = 2, width = 220, depth = 220, height=45, radius=10, tolerance=0.2) {
-  translate([0, 0, height + wall_width]) {
-    place_wall_mounts_x(box_width = width, box_depth = depth, wall_thickness = wall_width, tolerance = tolerance) {
-      wall_mounted_clip_holder(wall_thickness = wall_width, tolerance = tolerance);
+      if ($children > 1)
+        children(1);
     }
   }
 }
@@ -108,19 +107,41 @@ module box_clip_holders(wall_width = 2, width = 220, depth = 220, height=45, rad
 
 wall_width = 2;
 inner_wall_width = 1.6;
-width = 40;
-depth = 40;
+width = 65;
+depth = 65;
 height = 15;
 radius = 5;
 tolerance = 0.2;
 
-box(wall_width, width, depth, height, radius, tolerance) {
-  wall_mounted_stopper(wall_thickness = wall_width, tolerance = tolerance);
-  wall_mounted_stopper(wall_thickness = wall_width, tolerance = tolerance);
-  wall_mounted_stopper(wall_thickness = wall_width, tolerance = tolerance);
-  wall_mounted_stopper(wall_thickness = wall_width, tolerance = tolerance);
-}
+prod = true;
 
-translate([0, 0, height + wall_width * 3]) {
-  lid(wall_width, width, depth, radius, tolerance);
+if (prod) {
+  width = 220 - 6;
+  depth = 220 - 4;
+  height = 60;
+
+  box(wall_width, width, depth, height, radius, tolerance) {
+    lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+    lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+    wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
+    wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
+    wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
+    wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
+  }
+} else {
+  //box(wall_width, width, depth, height, radius, tolerance) {
+  //  lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+  //  lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+  //  wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
+  //  wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
+  //  wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
+  //  wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
+  //}
+  
+  translate([0, 0, height + wall_width  + 0]) {
+    lid(wall_width, width, depth, radius, tolerance) {
+      lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+      lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+    }
+  }
 }
