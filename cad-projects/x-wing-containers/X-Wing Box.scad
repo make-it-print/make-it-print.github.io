@@ -107,9 +107,9 @@ module lid(wall_width = 2, width = 220, depth = 220, radius=10, tolerance=0.2) {
 
 wall_width = 2;
 inner_wall_width = 1.6;
-width = 65;
-depth = 65;
-height = 15;
+width = 50;
+depth = 75;
+height = 10;
 radius = 5;
 tolerance = 0.2;
 
@@ -117,9 +117,29 @@ prod = true;
 
 if (prod) {
   width = 220 - 6;
-  depth = 220 - 4;
+  depth = 220 - 6;
   height = 60;
 
+  box(wall_width, width, depth, height, radius, tolerance) {
+    lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+    lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+    wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
+    wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
+    double_wall_mount(width) {
+      wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
+    }
+    double_wall_mount(width) {
+      wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
+    }
+  }
+
+  translate([0, 0, height + wall_width  + 10]) {
+    lid(wall_width, width, depth, radius, tolerance) {
+      lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+      lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+    }
+  }
+} else {
   box(wall_width, width, depth, height, radius, tolerance) {
     lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
     lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
@@ -128,17 +148,8 @@ if (prod) {
     wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
     wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
   }
-} else {
-  //box(wall_width, width, depth, height, radius, tolerance) {
-  //  lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
-  //  lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
-  //  wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
-  //  wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
-  //  wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
-  //  wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
-  //}
   
-  translate([0, 0, height + wall_width  + 0]) {
+  translate([0, 0, height + wall_width  + 10]) {
     lid(wall_width, width, depth, radius, tolerance) {
       lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
       lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
