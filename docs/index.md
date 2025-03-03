@@ -1,9 +1,11 @@
 # WARNING
-Work in progress! At the current state it's just a collection of random observations.
+Work in progress! At the current state it's just a collection of random notes. **Some** are **outdated and wrong**!.
 
-# Contants
-1. Observations log
+# Contents
+1. [Printer tuning log](log/log.md)
 1. [Useful resources](useful-resources/index.md)
+1. Tips
+   1. [Fixing uneven bed mesh]()
 1. Checklists
    1. [Nozzle change](checklists/nozzle-change.md)
 
