@@ -3,8 +3,8 @@ use <X-Wing Box.scad>
 
 wall_width = 2;
 inner_wall_width = 1.6;
-width = 220;
-depth = 220;
+width = 220 - 6;
+depth = 220 - 6;
 height = 50;
 radius = 5;
 
