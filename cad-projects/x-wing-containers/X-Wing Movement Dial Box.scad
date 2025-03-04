@@ -1,10 +1,11 @@
 use <X-Wing Movement Dial Surface.scad>
 use <X-Wing Box.scad>
+use <Box.scad>
 
 wall_width = 2;
 inner_wall_width = 1.6;
-width = 220 - 6;
-depth = 220 - 6;
+width = 214;
+depth = 214;
 height = 50;
 radius = 5;
 
