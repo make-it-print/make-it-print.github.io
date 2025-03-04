@@ -1,29 +1,18 @@
 # How To Fix Uneven Bed Mesh
 My printer has automatic bed leveling. But the results I get are far from perfect. At some spots the nozzle is too close causing ridges while at other spots it's too far giving me gaps. Tuning z-offset won't fix the issue.
 
-But it's possible to adjust the bed mesh manually for better results.
+My printer bed is warped and has multiple small areas that are either elevated or sunken. And these areas are not probed because the default bed mesh is configured to have only 5 probing points per axis.
 
-Here's what you need to do:
-1. Open printer config and get the mesh data. Here's how it looks on my printer. Each value is the height or height offset of a probing point. Increasing/decreasing the value a little affects how the printer firmware adjusts the nozzle z position around the point.
-  ```
-#*# [bed_mesh default]
-#*# version = 1
-#*# points =
-#*# 	  -0.332964, -0.218709, -0.057649, 0.051005, 0.083433
-#*# 	  -0.216716, -0.090444, 0.061116, 0.120359, 0.199513
-#*# 	  -0.078239, -0.015894, 0.100000, 0.189728, 0.214866
-#*# 	  -0.067562, -0.000021, 0.118914, 0.165458, 0.186980
-#*# 	  -0.094369, 0.011126, 0.106031, 0.146211, 0.136718
-  ```
-  ![alt text](uneven-bed-mesh-render.png)
-2. Slice a set of one layer patches spread across the bed evenly. The number of patches should match the number of probing points in the mesh. ![alt text](uneven-bed-mesh-patches.png)
-1. Print and inspect the results.
-1. Update the probe values corresponding to the specific patch you want to fix:
-  1. If you see ridges, then the nozzle is too high above. Decrease the height of the probing point a little.
-  1. Do the opposite if you see ridges on the patch, i.e. increase the point height to make the nozzle go higher above the point.
-1. Save printer config and print again.
-1. Iterate till perfection.
+Original bed mesh:
+![alt text](uneven-bed-mesh-render.png)
 
-### Tips
-1. Create an excel sheet with original values, adjustment coefficient and the result for easier manipulation.
-2. Gaps are easier to see. Increase z-offset until you see obvious gaps, then lower the corresponding points.
+This can be changed to get better precision. Here's the documentation with all the configuration parameters described: [Klipper Documentation: Bed Mesh](https://www.klipper3d.org/Bed_Mesh.html)
+
+So my first attempt was to increase the number of point from 5 to 9. After printing a patch covering the entire bed I could still see a lot of gaps at certain spots. So I increased the number of probing points to 11. This way auto leveling could measure Z more precisely and get a mesh that closely resembles the reality. Except for one single spot that was still missed.
+
+That can also be improved my specifying faulty regions!
+
+What to do:
+1. Increase the number of probing points (```probe_count: x, y```) in printer.cfg
+1. Print a one layer patch covering the entire surface. Adjust z-offset if necessary.
+1. Inspect the patch and see if there are still bad areas. Then either increase the number of points or use Faulty Regions feature. Read the docs, especially the part that explains how more probing points are generated around the faulty reguin and make sure one of the generated point gets as close as possible to the center of the spot you want to fix.
