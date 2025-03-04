@@ -1,4 +1,4 @@
-use <X-Wing Movement Dial Surface.scad>
+use <X-Wing Movement Dial.scad>
 use <X-Wing Box.scad>
 use <Box.scad>
 

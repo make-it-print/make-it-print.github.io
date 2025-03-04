@@ -1,6 +1,6 @@
 use <X-Wing Box.scad>
 use <X-Wing Ship Base Holder.scad>
-use <X-Wing Movement Dial Surface.scad>
+use <X-Wing Movement Dial.scad>
 
 height = 40;
 inner_wall_thickness = 1.6;
@@ -13,7 +13,7 @@ xwing_box(height = height, inner_wall_thickness = inner_wall_thickness) {
 
   small_base_holders_width = small_base_holder_width + inner_wall_thickness;
 
-  dials_width = box_width - 4 - small_base_holders_width - inner_wall_thickness;
+  dials_width = box_width - 4 - small_base_holders_width - inner_wall_thickness - 13;
   dials_depth = box_width - 4 - large_base_holder_width - inner_wall_thickness;
 
   small_base_holder_grid(18, 1, width = small_base_holder_width, wall_thickness = inner_wall_thickness);
@@ -30,7 +30,9 @@ xwing_box(height = height, inner_wall_thickness = inner_wall_thickness) {
     }
 
     translate([0, large_base_holder_width, 0]) {
-      movement_dial_holder_surface(width = dials_width, depth = dials_depth);
+      dialsColumnCount = movementDialColumnCount(dials_width);
+      dialsWidth = movementDialSurfaceWidth(dialsColumnCount);
+      #movement_dial_holder_surface(width = dialsWidth, depth = dials_depth, inner_wall_width = inner_wall_thickness);
     }
   }
 }

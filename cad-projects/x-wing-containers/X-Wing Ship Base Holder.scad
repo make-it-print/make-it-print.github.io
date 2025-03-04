@@ -34,32 +34,32 @@ module small_base_holder_grid(row_count = 10, column_count = 2, width = 43, dept
   }
 }
 
-module box_compartment_corner(height = 40, wall_thickness = 1.6) {
-  cube(size=[15, wall_thickness, height]);
-  cube(size=[wall_thickness, 15, height]);
+module box_compartment_corner(width = 15, depth = 15, height = 40, wall_thickness = 1.6) {
+  cube(size=[width, wall_thickness, height]);
+  cube(size=[wall_thickness, depth, height]);
 }
 
 module box_compartment(width = 58, depth = 58, height = 40, wall_thickness = 1.6) {
   width = width + wall_thickness * 2;
   depth = depth + wall_thickness * 2;
   
-  box_compartment_corner(height, wall_thickness);
+  box_compartment_corner(height = height, wall_thickness = wall_thickness);
 
   translate([width, 0, 0]) {
     rotate(90, [0, 0, 1]) {
-      box_compartment_corner(height, wall_thickness);
+      box_compartment_corner(height = height, wall_thickness = wall_thickness);
     }
 
     translate([0, depth, 0]) {
       rotate(180, [0, 0, 1]) {
-        box_compartment_corner(height, wall_thickness);
+        box_compartment_corner(height = height, wall_thickness = wall_thickness);
       }
     }
   }
 
   translate([0, depth, 0]) {
     rotate(270, [0, 0, 1]) {
-      box_compartment_corner(height, wall_thickness);
+      box_compartment_corner(height = height, wall_thickness = wall_thickness);
     }
   }
 }

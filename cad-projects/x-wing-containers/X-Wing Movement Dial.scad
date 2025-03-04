@@ -1,6 +1,15 @@
 function getOffset(inner_wall_width, width, hole_width) = (width - (hole_width + inner_wall_width * 2) )/2;
+function movementDialWidth() = 54;
+function movementDialDepth() = 8;
+function movementDialHeight() = 8;
+function movementDialHoleWidth() = 37;
 
-module movement_dial_holder_separator(inner_wall_width = 1.6, width = 54, depth = 8, height = 8, hole_width = 40) {
+module movement_dial_holder_separator(inner_wall_width = 1.6) {
+  width = movementDialWidth();
+  depth = movementDialDepth();
+  height = movementDialHeight();
+  hole_width = movementDialHoleWidth();
+
   offset = getOffset(inner_wall_width, width, hole_width);
 
   translate([offset, 0, 0]) {
@@ -12,98 +21,13 @@ module movement_dial_holder_separator(inner_wall_width = 1.6, width = 54, depth 
   }
 }
 
-module movement_dial_holder_angled_walls(inner_wall_width = 1.6, width = 54, depth = 8, height = 8, hole_width = 40, rowIndex = 0) {
-  offset = getOffset(inner_wall_width, width, hole_width);
+module movement_dial_holder_even(inner_wall_width = 1.6) {
+  width = movementDialWidth();
+  depth = movementDialDepth();
+  height = movementDialHeight();
+  hole_width = movementDialHoleWidth();
 
-  angle = 12;
-  a = hole_width/2 - offset + inner_wall_width;
-  h = a / cos(angle);
-  b = sin(angle) * h;
-  wall_center = inner_wall_width / 2;
-  spacer_width = 2;
-  spacer_offset = wall_center + spacer_width / 2;
-  wall_offset = b / 2 + wall_center;
-
-  translate([offset + a / 2, wall_offset, height / 2]) {
-    direction = 1;
-
-    if (rowIndex % 2 == 0) {
-      direction = -1;
-    }
-
-    rotate(angle * direction, [0, 0, 1]) {
-      cube(size=[h, inner_wall_width, height], center = true);
-    }
-
-    translate([a + offset * 2, 0, 0]) {
-      rotate(-angle * direction, [0, 0, 1]) {
-        cube(size=[h, inner_wall_width, height], center = true);
-      }  
-    }
-  }
-}
-
-module movement_dial_holder_angled_even(inner_wall_width = 1.6, width = 54, depth = 8, height = 8, hole_width = 40) {
-  offset = getOffset(inner_wall_width, width, hole_width);
-
-  angle = 12;
-  a = hole_width/2 - offset + inner_wall_width;
-  h = a / cos(angle);
-  b = sin(angle) * h;
-  wall_center = inner_wall_width / 2;
-  spacer_width = 2;
-  spacer_offset = wall_center + spacer_width / 2;
-  wall_offset = b / 2 + wall_center;
-
-  for (i=[0:2]) {
-    translate([0, (b + spacer_offset * 2) * i, 0]) {
-      translate([offset + a / 2, wall_offset, height / 2]) {
-        if (i % 2 == 0) {
-          rotate(-angle, [0, 0, 1]) {
-            cube(size=[h, inner_wall_width, height], center = true);
-          }
-
-          translate([a + offset * 2, 0, 0]) {
-            rotate(angle, [0, 0, 1]) {
-              cube(size=[h, inner_wall_width, height], center = true);
-            }  
-          }
-        } else {
-          rotate(angle, [0, 0, 1]) {
-            cube(size=[h, inner_wall_width, height], center = true);
-          }
-
-          translate([a + offset * 2, 0, 0]) {
-            rotate(-angle, [0, 0, 1]) {
-              cube(size=[h, inner_wall_width, height], center = true);
-            }  
-          }
-        }
-      }
-    
-      if (i % 2 == 0) {
-        translate([offset + wall_center, b + wall_center + spacer_offset, 0]) {
-          cube(size=[inner_wall_width, spacer_width + inner_wall_width * 2, height], center = true);
-
-          translate([hole_width + inner_wall_width, 0, 0]) {
-              cube(size=[inner_wall_width, spacer_width + inner_wall_width * 2, height], center = true);
-          }
-        }
-      } else {
-        translate([offset - wall_center + a, b + wall_center + spacer_offset, 0]) {
-          cube(size=[inner_wall_width, spacer_width + inner_wall_width * 2, height], center = true);
-
-          translate([offset * 2 + inner_wall_width, 0, 0]) {
-            cube(size=[inner_wall_width, spacer_width + inner_wall_width * 2, height], center = true);
-          }
-        }
-      }
-    }
-  }
-}
-
-module movement_dial_holder_even(inner_wall_width = 1.6, width = 54, depth = 8, height = 8, hole_width = 40) {
-  movement_dial_holder_separator(inner_wall_width, width, depth, height, hole_width);
+  movement_dial_holder_separator(inner_wall_width);
 
   offset = getOffset(inner_wall_width, width, hole_width);
 
@@ -116,8 +40,13 @@ module movement_dial_holder_even(inner_wall_width = 1.6, width = 54, depth = 8, 
   }
 }
 
-module movement_dial_holder_odd(inner_wall_width = 1.6, width = 54, depth = 8, height = 8, hole_width = 40) {
-  movement_dial_holder_separator(inner_wall_width, width, depth, height, hole_width);
+module movement_dial_holder_odd(inner_wall_width = 1.6) {
+  width = movementDialWidth();
+  depth = movementDialDepth();
+  height = movementDialHeight();
+  hole_width = movementDialHoleWidth();
+
+  movement_dial_holder_separator(inner_wall_width);
 
   offset = getOffset(inner_wall_width, width, hole_width);
 
@@ -130,41 +59,61 @@ module movement_dial_holder_odd(inner_wall_width = 1.6, width = 54, depth = 8, h
   }
 }
 
-module movement_dial_holder_v1(inner_wall_width = 1.6, width = 54, depth = 8, height = 8, hole_width = 40) {
-  cube(size=[width, inner_wall_width, height]);
+function movementDialRowDepth(inner_wall_width = 1.6) = movementDialDepth() + inner_wall_width;
+function movementDialRowCount(depth = 214, inner_wall_width = 1.6) = floor((depth - inner_wall_width)/movementDialRowDepth());
+function movementDialColumnCount(width = 214) = round( width / movementDialWidth());
+function movementDialSurfaceDepth(row_count = 1, inner_wall_width = 1.6) = row_count * movementDialRowDepth(inner_wall_width);
+function movementDialSurfaceWidth(column_count = 1) = column_count * movementDialWidth();
 
-  offset = (width - (hole_width + inner_wall_width * 2) )/2;
-  translate([offset, inner_wall_width, 0]) {
-    cube(size=[inner_wall_width, depth, height]);
+module movement_dial_holder_surface(inner_wall_width = 1.6, width = 214, depth = 214) {
+  movement_dial_width = movementDialWidth();
+  movement_dial_depth = movementDialDepth();
   
-    translate([hole_width + inner_wall_width, 0, 0]) {
-      cube(size=[inner_wall_width, depth, height]);
+  movement_dial_row_depth = movementDialRowDepth(inner_wall_width);
+  row_count = movementDialRowCount(depth, inner_wall_width);
+  column_count = movementDialColumnCount(width);
+
+  movement_dial_surface_depth = movementDialSurfaceDepth(row_count, inner_wall_width);
+  movement_dial_surface_width = movementDialSurfaceWidth(column_count);
+  
+  movement_dial_surface_y_offset = (depth - (movement_dial_surface_depth + inner_wall_width))/2;
+  movement_dial_surface_x_offset = (width - movement_dial_surface_width)/2;
+  
+  translate([movement_dial_surface_x_offset, movement_dial_surface_y_offset, 0]) {  
+    for(x=[0:1:column_count - 1]) // repeat the following with two variants for x
+    {
+      for(i=[0:1:row_count - 1])
+      {
+        translate([x * movement_dial_width, movement_dial_row_depth * i,0]) {
+          if (i % 2 == 0) {
+            movement_dial_holder_even(inner_wall_width);
+          } else {
+            movement_dial_holder_odd(inner_wall_width);
+          }
+        }
+      }
+
+      translate([x * movement_dial_width, movement_dial_surface_depth, 0]) {
+        movement_dial_holder_separator(inner_wall_width);
+      }
     }
   }
-}
-
-module movement_dial_holder_odd_v1(inner_wall_width = 1.6, width = 54, depth = 8, height = 8, hole_width = 40) {
-  cube(size=[width, inner_wall_width, height]);
-
-  translate([hole_width/2, inner_wall_width, 0]) {
-    cube(size=[inner_wall_width, depth, height]);
-  }
-
-  translate([width - hole_width/2 - inner_wall_width, inner_wall_width, 0]) {
-      cube(size=[inner_wall_width, depth, height]);
-    }
 }
 
 inner_wall_width = 1.6;
-width = 54;
 depth = 8;
-height = 8;
-hole_width = 40;
+singleDial = true;
 
-%movement_dial_holder_even(inner_wall_width, width, depth, height, hole_width);
-
-translate([0, depth + inner_wall_width, 0]) {
-  %movement_dial_holder_odd(inner_wall_width, width, depth, height, hole_width);
+if (singleDial) {
+  %movement_dial_holder_even(inner_wall_width);
+  
+  translate([0, depth + inner_wall_width, 0]) {
+    %movement_dial_holder_odd(inner_wall_width);
+  }
+} else {
+  translate([0, 0, -10]) {
+    %cube(size=[220,220, 10]);
+  }
+  
+  movement_dial_holder_surface();
 }
-
-!movement_dial_holder_angled_even(inner_wall_width, width, depth, height, hole_width);
