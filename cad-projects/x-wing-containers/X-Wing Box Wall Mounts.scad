@@ -20,6 +20,10 @@ module wall_mount_base (depth = 20, height = 10, wall_thickness = 2, tolerance =
   }
 }
 
+module no_mounts() {
+
+}
+
 
 module wall_mounted_stopper (depth = 32, height = 10, wall_thickness = 2, tolerance = 0.2) {
   wall_mount_base(depth, height, wall_thickness, tolerance) {
@@ -59,7 +63,7 @@ module wall_mounted_hinge_tongue (depth = 20, height = 10, wall_thickness = 2, t
 
 
 module wall_mounted_click_lock (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.1) {
-  fullDepth = depth + wall_thickness * 10;
+  fullDepth = depth + wall_thickness * 15;
   thickness = wall_thickness * 1.5;
 
   difference() {  
@@ -131,8 +135,8 @@ module lid_mounted_click_lock_tongue (depth = 20, wall_thickness = 2, tolerance 
     }
   }
 
-  clickLockOffset = wall_thickness * 11;
-  fingerNotchDepth = wall_thickness * 5;
+  clickLockOffset = wall_thickness * 16;
+  fingerNotchDepth = wall_thickness * 10;
   translate([0, -(depth + clickLockOffset) / 2, 0]) {
     translate([0, depth + clickLockOffset, 0]) {
       cube(size=[wall_thickness, fingerNotchDepth, wall_thickness]);

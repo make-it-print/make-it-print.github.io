@@ -43,6 +43,19 @@ module box_base_shape(width, depth, height, top_radius, bottom_radius) {
   }
 }
 
+module box_walls(wall_width = 2, width = 220, depth = 220, height=50, top_radius=10, bottom_radius=10) {
+  difference() {
+    box_base_shape(width, depth, height, top_radius, bottom_radius);
+    translate([0, 0, -wall_width]) {
+      box_base_shape(
+        width - wall_width, 
+        depth - wall_width, 
+        height + wall_width * 2, 
+        top_radius - wall_width, 
+        bottom_radius - wall_width);
+    }
+  }
+}
 
 module box_base(wall_width = 2, width = 220, depth = 220, height=50, radius=10, lid = false) {
   union() {
@@ -52,16 +65,24 @@ module box_base(wall_width = 2, width = 220, depth = 220, height=50, radius=10, 
     // Walls
     translate([0, 0, wall_width]) {
       if (!lid) {
-        difference() {
-          box_base_shape(width, depth, height, radius, radius);
-          translate([0, 0, -wall_width]) {
-            box_base_shape(
-              width - wall_width, 
-              depth - wall_width, 
-              height + wall_width * 2, 
-              radius - wall_width, 
-              radius - wall_width);
-          }
+        box_walls(wall_width, width, depth, height, radius, radius);
+      }
+    }
+  }
+}
+
+module wall_reinforcement(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
+  reinforcementHeight = 6;
+  reinforcementWidth = width + wall_width;
+  reinforcementDepth = depth + wall_width;
+  reinforcementRadius = radius + wall_width;
+  translate([0, 0, -reinforcementHeight]) {
+    box_walls(wall_width, reinforcementWidth, reinforcementDepth, reinforcementHeight, reinforcementRadius, radius);
+    translate([0, 0, reinforcementHeight]) {
+      difference() {
+        box_walls(wall_width, reinforcementWidth, reinforcementDepth, wall_width, reinforcementRadius, reinforcementRadius);
+        translate([-wall_width, reinforcementRadius * 2, 0]) {
+          cube(size=[reinforcementWidth + wall_width * 2, reinforcementDepth - reinforcementRadius * 4, 10]);
         }
       }
     }
@@ -79,6 +100,7 @@ module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
     }
     
     translate([0, 0, height + wall_width]) {
+      wall_reinforcement(wall_width, width, depth, height, radius);
       place_wall_mounts_x(box_width = width, box_depth = depth) {
         children(2);
         children(3);
@@ -125,7 +147,7 @@ if (prod) {
   height = 60;
 
   if (showBox)
-    box(wall_width, width, depth, height, radius, tolerance) {
+    box(wall_width, width, depth, height, radius) {
       lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
       lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
       wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
@@ -137,6 +159,10 @@ if (prod) {
         wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
       }
     }
+
+    //translate([0, 0, wall_width]) {
+    //  box_walls(wall_width, width, depth, 10, radius, radius + wall_width);
+    //}
   
   if (showLid)
     translate([0, 0, height + wall_width  + 10]) {
