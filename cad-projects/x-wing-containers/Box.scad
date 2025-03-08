@@ -29,12 +29,17 @@ module place_wall_mounts_y(box_width, box_depth)
   }
 }
 
+function max(a, b) = a > b ? a : b;
+function min(a, b) = a < b ? a : b;
+
 module box_base_shape(width, depth, height, top_radius, bottom_radius) {
   $fn = $preview ? 16 : 64;
 
   hull() {
-    for (x=[radius, width - top_radius]) {
-      for (y=[radius, depth - top_radius]) {
+    offset = max(top_radius, bottom_radius);
+
+    for (x=[offset, width - offset]) {
+      for (y=[offset, depth - offset]) {
         translate([x, y, 0]) {
           cylinder(r1 = bottom_radius, r2 = top_radius, h = height);  
         }
@@ -43,16 +48,23 @@ module box_base_shape(width, depth, height, top_radius, bottom_radius) {
   }
 }
 
+function getRadiusOrMinimum(radius, min) = radius < min ? min : radius;
+
 module box_walls(wall_width = 2, width = 220, depth = 220, height=50, top_radius=10, bottom_radius=10) {
   difference() {
     box_base_shape(width, depth, height, top_radius, bottom_radius);
     translate([0, 0, -wall_width]) {
-      box_base_shape(
-        width - wall_width, 
-        depth - wall_width, 
-        height + wall_width * 2, 
-        top_radius - wall_width, 
-        bottom_radius - wall_width);
+      negative_top_radius = getRadiusOrMinimum(top_radius - wall_width, 1);
+      negative_bottom_radius = getRadiusOrMinimum(bottom_radius - wall_width, 1);
+
+      translate([wall_width, wall_width, 0]) {
+        box_base_shape(
+          width - wall_width * 2, 
+          depth - wall_width * 2, 
+          height + wall_width * 2, 
+          negative_top_radius, 
+          negative_bottom_radius);
+      }
     }
   }
 }
@@ -73,16 +85,16 @@ module box_base(wall_width = 2, width = 220, depth = 220, height=50, radius=10, 
 
 module wall_reinforcement(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
   reinforcementHeight = 6;
-  reinforcementWidth = width + wall_width;
-  reinforcementDepth = depth + wall_width;
+  reinforcementWidth = width + wall_width * 2;
+  reinforcementDepth = depth + wall_width * 2;
   reinforcementRadius = radius + wall_width;
-  translate([0, 0, -reinforcementHeight]) {
+  translate([-wall_width, -wall_width, -reinforcementHeight]) {
     box_walls(wall_width, reinforcementWidth, reinforcementDepth, reinforcementHeight, reinforcementRadius, radius);
     translate([0, 0, reinforcementHeight]) {
       difference() {
-        box_walls(wall_width, reinforcementWidth, reinforcementDepth, wall_width, reinforcementRadius, reinforcementRadius);
-        translate([-wall_width, reinforcementRadius * 2, 0]) {
-          cube(size=[reinforcementWidth + wall_width * 2, reinforcementDepth - reinforcementRadius * 4, 10]);
+        box_walls(wall_width, reinforcementWidth, reinforcementDepth, wall_width * 2, reinforcementRadius, reinforcementRadius);
+        translate([-wall_width - 0.01, reinforcementRadius * 2 - wall_width * 2, 0]) {
+          cube(size=[reinforcementWidth + wall_width * 2, reinforcementDepth - reinforcementRadius * 4 + wall_width * 3, 10]);
         }
       }
     }
@@ -116,8 +128,33 @@ module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
   }
 }
 
-module lid(wall_width = 2, width = 220, depth = 220, radius=10) {
-  box_base(wall_width, width, depth, wall_width * 2, radius, true);
+module lid(wall_width = 2, width = 220, depth = 220, radius=10, tolerance = 0.1) {
+  height = wall_width;
+
+  // Bottom nothces
+  translate([wall_width + tolerance, wall_width + tolerance, -height]) {
+    difference() {
+      bottomNotchWidth = width - (wall_width + tolerance) * 2;
+      bottomNotchDepth = depth - (wall_width + tolerance) * 2;
+      box_walls(wall_width, bottomNotchWidth, bottomNotchDepth, height, radius, radius);
+
+      translate([-wall_width, radius, -wall_width]) {
+        cube(size=[width + wall_width * 2, bottomNotchDepth - radius * 2, 10]);
+      }
+
+      translate([radius, -wall_width, -wall_width]) {
+        cube(size=[bottomNotchWidth - radius * 2, depth + wall_width * 2, 10]);
+      }
+    }
+  }
+
+  // reinforcement
+  box_walls(wall_width * 2.1, width, depth, height, radius, radius);
+
+  // top
+  translate([0, 0, height]) {
+    box_base(wall_width, width, depth, 0, radius, true);
+  }
 
   if ($children > 0) {
     place_wall_mounts_x(box_width = width, box_depth = depth) {
@@ -137,9 +174,9 @@ height = 10;
 radius = 5;
 tolerance = 0.2;
 
-prod = true;
+prod = false;
 showBox = true;
-showLid = false;
+showLid = true;
 
 if (prod) {
   width = 220 - 6;
@@ -166,25 +203,36 @@ if (prod) {
   
   if (showLid)
     translate([0, 0, height + wall_width  + 10]) {
-      lid(wall_width, width, depth, radius, tolerance) {
+      lid(wall_width, width, depth, radius) {
         lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
         lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
       }
     }
-} else {
-  box(wall_width, width, depth, height, radius, tolerance) {
-    lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
-    lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
-    wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
-    wall_mounted_click_lock(wall_thickness = wall_width, tolerance = 0);
-    wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
-    wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
-  }
+} 
+else 
+{
+  tongueDepth = 20;
+  fullDepth= 30;
+  fingerNotchDepth = 10;
   
-  translate([0, 0, height + wall_width  + 10]) {
-    lid(wall_width, width, depth, radius, tolerance) {
-      lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
-      lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
+  if (showBox)
+    box(wall_width, width, depth, height, radius) {
+      //lid_mounted_click_lock_tongue(fullDepth = fullDepth, tongueDepth=tongueDepth, fingerNotchDepth = fingerNotchDepth, wall_thickness = wall_width, tolerance = 0);
+      no_mounts();
+      lid_mounted_click_lock_tongue(fullDepth = fullDepth, tongueDepth=tongueDepth, fingerNotchDepth = fingerNotchDepth, wall_thickness = wall_width, tolerance = 0);
+      //wall_mounted_click_lock(fullDepth = fullDepth, tongueDepth=tongueDepth, wall_thickness = wall_width, tolerance = 0);
+      no_mounts();
+      wall_mounted_click_lock(fullDepth = fullDepth, tongueDepth=tongueDepth, wall_thickness = wall_width, tolerance = 0);
+      wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
+      wall_mounted_stopper(wall_thickness = wall_width, tolerance = 0);
     }
-  }
+  
+  if (showLid)
+    translate([0, 0, height + wall_width + 10]) {
+      lid(wall_width, width, depth, radius) {
+        //lid_mounted_click_lock_tongue(fullDepth = fullDepth, tongueDepth=tongueDepth, fingerNotchDepth = fingerNotchDepth, wall_thickness = wall_width, tolerance = 0);
+        no_mounts();
+        lid_mounted_click_lock_tongue(fullDepth = fullDepth, tongueDepth=tongueDepth, fingerNotchDepth = fingerNotchDepth, wall_thickness = wall_width, tolerance = 0);
+      }
+    }
 }
