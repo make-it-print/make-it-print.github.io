@@ -1,3 +1,6 @@
+use <Alignments.scad>
+use <Primitives.scad>
+
 module wall_mount_base (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.2) {
   translate([0, -depth / 2, 0]) {
     baseThickness = wall_thickness + tolerance * 2;
@@ -94,16 +97,6 @@ module wall_mounted_click_lock (fullDepth = 50, tongueDepth = 20, height = 10, w
   }
 }
 
-module mirror(offsetX, offsetY, offsetZ) {
-  translate([offsetX, offsetY, offsetZ]) {
-    children(0);
-  }
-
-  translate([-offsetX, -offsetY, -offsetZ]) {
-    children(0);
-  }
-}
-
 module lid_mounted_click_lock_tongue (fullDepth = 50, tongueDepth = 20, fingerNotchDepth = 20, wall_thickness = 2, tolerance = 0.1) {
   translate([-tolerance, -tongueDepth / 2, 0]) {
     difference() {
@@ -163,14 +156,31 @@ module lid_mounted_click_lock_tongue (fullDepth = 50, tongueDepth = 20, fingerNo
 
   fingerNotchWidth = wallMountedClickLockThickness(wall_thickness);
   clickLockOffset = fullDepth - tongueDepth + wall_thickness;
-  translate([0, -(tongueDepth + clickLockOffset) / 2, wall_thickness]) {
+  translate([0, -(tongueDepth + clickLockOffset) / 2, 0]) {
     translate([0, tongueDepth + clickLockOffset, 0]) {
-      cube(size=[fingerNotchWidth, fingerNotchDepth, wall_thickness]);
+      lid_mounted_click_lock_tongue_finger_lip(fingerNotchDepth, wall_thickness);
     }
 
     translate([0, - fingerNotchDepth, 0]) {
-      cube(size=[fingerNotchWidth, fingerNotchDepth, wall_thickness]);
+      lid_mounted_click_lock_tongue_finger_lip(fingerNotchDepth, wall_thickness);;
     }
+  }
+}
+
+
+module lid_mounted_click_lock_tongue_finger_lip (fingerNotchDepth = 20, wall_thickness = 2) {
+  fingerNotchWidth = wallMountedClickLockThickness(wall_thickness);
+  offset = fingerNotchWidth - wall_thickness;
+
+  cube(size=[offset, fingerNotchDepth, wall_thickness]);
+  
+  translate([offset, 0, 0]) {
+    triangular_profile(wall_thickness, wall_thickness, fingerNotchDepth, points=[
+      [0, 1], [1, 1], [0, 0]
+    ]);
+  }
+  translate([0, 0, wall_thickness]) {
+    cube(size=[fingerNotchWidth, fingerNotchDepth, wall_thickness]);
   }
 }
 
@@ -199,10 +209,7 @@ fingerNotchDepth = 10;
 // wall_mounted_stopper(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // wall_mounted_hinge(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
 // wall_mounted_hinge_tongue(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
-
-*double_wall_mount(60) {
-  wall_mounted_stopper(depth=10, wall_thickness=wall_thickness, tolerance=tolerance);
-}
+//lid_mounted_click_lock_tongue_finger_lip (fingerNotchDepth, wall_thickness);
 
 difference() {
   union() {
