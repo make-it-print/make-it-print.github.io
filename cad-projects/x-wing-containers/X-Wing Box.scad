@@ -1,12 +1,16 @@
 use <Box.scad>
 use <X-Wing Box Wall Mounts.scad>
 
+clickLockTongueDepth = 30;
+clickLockDepth = 50;
+clickLockFingerLipDepth = 30;
+
 module xwing_box_click_lock_tongue(wall_thickness) {
-  lid_mounted_click_lock_tongue(fullDepth = 50, tongueDepth = 30, fingerNotchDepth = 20, wall_thickness = wall_thickness, tolerance = 0);
+  lid_mounted_click_lock_tongue(fullDepth = clickLockDepth, tongueDepth = clickLockTongueDepth, fingerNotchDepth = clickLockFingerLipDepth, wall_thickness = wall_thickness, tolerance = 0);
 }
 
 module xwing_box_click_lock(wall_thickness) {
-  wall_mounted_click_lock(fullDepth = 50, tongueDepth = 30, wall_thickness = wall_thickness, tolerance = 0);
+  wall_mounted_click_lock(fullDepth = clickLockDepth, tongueDepth = clickLockTongueDepth, wall_thickness = wall_thickness, tolerance = 0);
 }
 
 module xwing_box(width = 214, depth = 214, height = 60, radius = 5, wall_thickness = 2, inner_wall_thickness = 1.6) {
