@@ -1,35 +1,47 @@
-module small_base_holder(width = 43, depth = 10, height = 8, wall_thickness = 1.6) {
-  cube(size=[wall_thickness, depth + wall_thickness, height]);
-  translate([wall_thickness, 0, 0]) {
-    cube(size=[width, wall_thickness, height]);
+function smallBaseHolderWidth(wall_thickness = 1.6) = 41 + wall_thickness;
+function smallBaseHolderDepth(wall_thickness = 1.6) = 9 + wall_thickness;
 
-    translate([width, 0, 0]) {
-      cube(size=[wall_thickness, depth + wall_thickness, height]);
+module small_base_holder(height = 8, wall_thickness = 1.6) {
+  width = smallBaseHolderWidth(wall_thickness);
+  depth = smallBaseHolderDepth(wall_thickness);
+  cornerWidth = 10;
+
+  box_compartment_corner(height = height, wall_thickness = wall_thickness, width = cornerWidth, depth = depth);
+
+  translate([width + wall_thickness, 0, 0]) {
+    rotate(90, [0, 0, 1]) {
+      box_compartment_corner(height = height, wall_thickness = wall_thickness, width = depth, depth = cornerWidth);
     }
   }
 }
 
 module small_base_holder_surface(width, depth, wall_thickness = 1.6) {
-  holder_width = 42;
-  holder_depth = 10;
+  holder_width = smallBaseHolderWidth(wall_thickness);
+  holder_depth = smallBaseHolderDepth(wall_thickness);
   holder_height = 8;
 
-  row_count = floor(depth / (holder_depth + wall_thickness));
-  column_count = floor(width / (holder_width + wall_thickness));
+  row_count = floor(depth / holder_depth);
+  column_count = floor(width / holder_width);
 
-  small_base_holder_grid(row_count, column_count, holder_width, holder_depth, holder_height, wall_thickness);
+  small_base_holder_grid(row_count, column_count, holder_height, wall_thickness);
 }
 
-module small_base_holder_grid(row_count = 10, column_count = 2, width = 43, depth = 10, height = 8, wall_thickness = 1.6) {
+module small_base_holder_grid(row_count = 10, column_count = 2, height = 8, wall_thickness = 1.6) {
+  width = smallBaseHolderWidth(wall_thickness);
+  depth = smallBaseHolderDepth(wall_thickness);
   for(x=[0:1:column_count-1]) {
     for(y=[0:1:row_count-1]) {
-      translate([(width + wall_thickness) * x, (depth + wall_thickness) * y, 0]) {
-        small_base_holder(width, depth, height, wall_thickness);
+      translate([width * x, depth * y, 0]) {
+        small_base_holder(height, wall_thickness);
       }
     }
 
-    translate([(width + wall_thickness) * x, (depth + wall_thickness) * row_count, 0]) {
-      #cube(size=[width + wall_thickness * 2, wall_thickness, height]);
+    translate([width * x, 0, 0]) {
+      cube(size=[width + wall_thickness, wall_thickness, height]);
+      
+      translate([0, depth * row_count, 0]) {
+        cube(size=[width + wall_thickness, wall_thickness, height]);
+      }
     }
   }
 }
@@ -39,27 +51,27 @@ module box_compartment_corner(width = 15, depth = 15, height = 40, wall_thicknes
   cube(size=[wall_thickness, depth, height]);
 }
 
-module box_compartment(width = 58, depth = 58, height = 40, wall_thickness = 1.6) {
+module box_compartment(width = 58, depth = 58, height = 40, wall_thickness = 1.6, cornerSize = [15, 15]) {
   width = width + wall_thickness * 2;
   depth = depth + wall_thickness * 2;
   
-  box_compartment_corner(height = height, wall_thickness = wall_thickness);
+  box_compartment_corner(height = height, wall_thickness = wall_thickness, width = cornerSize[0], depth = cornerSize[1]);
 
   translate([width, 0, 0]) {
     rotate(90, [0, 0, 1]) {
-      box_compartment_corner(height = height, wall_thickness = wall_thickness);
+      box_compartment_corner(height = height, wall_thickness = wall_thickness, width = cornerSize[1], depth = cornerSize[0]);
     }
 
     translate([0, depth, 0]) {
       rotate(180, [0, 0, 1]) {
-        box_compartment_corner(height = height, wall_thickness = wall_thickness);
+        box_compartment_corner(height = height, wall_thickness = wall_thickness, width = cornerSize[0], depth = cornerSize[1]);
       }
     }
   }
 
   translate([0, depth, 0]) {
     rotate(270, [0, 0, 1]) {
-      box_compartment_corner(height = height, wall_thickness = wall_thickness);
+      box_compartment_corner(height = height, wall_thickness = wall_thickness, width = cornerSize[1], depth = cornerSize[0]);
     }
   }
 }
@@ -76,16 +88,15 @@ translate([0, 0, -10]) {
   %cube(size=[220-6,220-6, 10]);
 }
 
-small_base_holder_grid(18, 1);
+inner_wall_thickness = 1.6;
+rowCount = 6;
 
-translate([(42 + 1.6 * 2), 0, 0]) {
-  large_base_holder_compartment();
-
-  translate([86, 0, 0]) {
-    medium_base_holder_compartment();
-  }
-
-  translate([86, 68 + 1.6 * 2, 0]) {
-    box_compartment(68, 86 - 68);
-  }
+box_compartment(
+  width = smallBaseHolderWidth(inner_wall_thickness) - inner_wall_thickness, 
+  depth = smallBaseHolderDepth(inner_wall_thickness) * rowCount - inner_wall_thickness,
+  height = 40,
+  cornerSize = [10, 5]);
+translate([0, 0, 0]) {
+  small_base_holder_grid(rowCount, 1);
 }
+
