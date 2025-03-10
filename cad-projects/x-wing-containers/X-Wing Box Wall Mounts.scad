@@ -31,54 +31,80 @@ module wall_mounted_stopper (depth = 32, height = 10, wall_thickness = 2, tolera
   }
 }
 
-module wall_mounted_hinge (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.1) {
-  fullDepth = depth + wall_thickness * 2;
+module wall_mounted_hinge (tongueDepth = 30, height = 10, wall_thickness = 2, tolerance = 0.1) {
+  sideDepth = wall_thickness * 3;
+  fullDepth = tongueDepth + (sideDepth + tolerance) * 2;
+
+  thickness = wallMountedClickLockThickness(wall_thickness);
 
   difference() {  
-    wall_mount_base(fullDepth, height, wall_thickness, 0) {
-      cube(size=[wall_thickness, wall_thickness, wall_thickness + tolerance]);
-  
-      translate([0, fullDepth - wall_thickness, 0]) {
-        cube(size=[wall_thickness, wall_thickness, wall_thickness + tolerance]);
-      }
-      
-      translate([0, 0, wall_thickness + tolerance]) {
-        cube(size=[wall_thickness, fullDepth, wall_thickness]);
-      }
-    }
-  
-    translate([0, -depth / 2, 0]) {
-      rotate(30, [0, 1, 0]) {
-        cube(size=[wall_thickness * 3, depth, wall_thickness]);
-      }
+    side_fixture_body (fullDepth, height, wall_thickness, tolerance);
+
+    negativeDepth = tongueDepth + tolerance * 2;
+    translate([-tolerance, -negativeDepth / 2, tolerance]) {
+      cube(size=[thickness + tolerance * 2, negativeDepth, thickness]);
     }
   }
 }
 
-module wall_mounted_hinge_tongue (depth = 20, height = 10, wall_thickness = 2, tolerance = 0.1) {
-  translate([-tolerance, -depth / 2, 0]) {
-    cube(size=[wall_thickness + tolerance, depth, wall_thickness]);
+module wall_mounted_hinge_tongue (depth = 30, height = 10, wall_thickness = 2, tolerance = 0.1) {
+  thickness = wallMountedClickLockThickness(wall_thickness);
+  halfThickness = thickness / 2;
+
+  module negative(depth = 30, height = 10, wall_thickness = 2) {
+    translate([0, -depth/2, -height]) {
+      rotate(-60, [0, 0, 1]) {
+        cube(size=[thickness * 2, wall_thickness * 3, height * 2]);
+      }
+    }
+  }
+
+  difference() {
+    translate([-tolerance, -depth / 2, 0]) {
+      cube(size=[halfThickness, depth, halfThickness]);
+  
+      translate([halfThickness, 0, 0]) {
+        triangular_profile(halfThickness, halfThickness, depth, points=[
+          [0, 1], [1, 1], [0, 0]
+        ]);
+      }
+  
+      translate([0, 0, halfThickness]) {
+        cube(size=[thickness, depth, halfThickness]);
+      }
+    }
+
+    negative(depth, height, wall_thickness);
+    rotate(180, [1, 0, 0]) {
+      negative(depth, height, wall_thickness);
+    }
   }
 }
 
 function wallMountedClickLockThickness(wall_thickness = 2) = wall_thickness * 1.5;
 
+module side_fixture_body (fullDepth = 50, height = 10, wall_thickness = 2, tolerance = 0.1) {
+  thickness = wallMountedClickLockThickness(wall_thickness);
+
+  wall_mount_base(fullDepth, height, thickness, 0) {
+    cube(size=[thickness, fullDepth, wall_thickness * 2 + tolerance * 3]);
+
+    translate([0, 0, wall_thickness * 2 + tolerance * 3]) {
+      triangular_profile(thickness, thickness, fullDepth, points=[
+        [0.5, 0.5], [1, 0], [0, 0]
+      ]);
+
+      translate([thickness / 2, 0, 0])
+        cube(size=[thickness / 2, fullDepth, thickness / 2]);
+    }
+  }
+}
+
 module wall_mounted_click_lock (fullDepth = 50, tongueDepth = 30, height = 10, wall_thickness = 2, tolerance = 0.1) {
   thickness = wallMountedClickLockThickness(wall_thickness);
 
   difference() {  
-    wall_mount_base(fullDepth, height, thickness, 0) {
-      cube(size=[thickness, fullDepth, wall_thickness * 2 + tolerance * 3]);
-
-      translate([0, 0, wall_thickness * 2 + tolerance * 3]) {
-        triangular_profile(thickness, thickness, fullDepth, points=[
-          [0.5, 0.5], [1, 0], [0, 0]
-        ]);
-
-        translate([thickness / 2, 0, 0])
-          cube(size=[thickness / 2, fullDepth, thickness / 2]);
-      }
-    }
+    side_fixture_body (fullDepth, height, wall_thickness, tolerance);
 
     negativeDepth = tongueDepth + wall_thickness;
     translate([-tolerance, -negativeDepth / 2, tolerance]) {
@@ -94,6 +120,7 @@ module wall_mounted_click_lock (fullDepth = 50, tongueDepth = 30, height = 10, w
 module lid_mounted_click_lock_tongue (fullDepth = 50, tongueDepth = 30, fingerNotchDepth = 20, wall_thickness = 2, tolerance = 0.1) {
   translate([-tolerance, -tongueDepth / 2, 0]) {
     difference() {
+      // Main triangular body
       translate([0, 0, wall_thickness * 2]) {
         rotate(-90, [1, 0, 0]) {
           linear_extrude(height=tongueDepth) {
@@ -109,12 +136,14 @@ module lid_mounted_click_lock_tongue (fullDepth = 50, tongueDepth = 30, fingerNo
         }
       }
       
+      // Side cut
       translate([wall_thickness / 2, -wall_thickness, -tolerance]) {
         rotate(30, [0, 0, 1]) {
           cube(size=[wall_thickness * 2, wall_thickness, wall_thickness * 2 + tolerance * 2]);
         }
       }
 
+      // Side cut
       translate([wall_thickness / 2, tongueDepth + wall_thickness, wall_thickness * 2 + tolerance]) {
         rotate(180, [1, 0, 0]) {
           rotate(30, [0, 0, 1]) {
@@ -124,6 +153,7 @@ module lid_mounted_click_lock_tongue (fullDepth = 50, tongueDepth = 30, fingerNo
       }
     }
 
+    // Base
     translate([-wall_thickness, 0, 0]) {
       cube(size=[wall_thickness, tongueDepth, wall_thickness * 2]);
     }
@@ -138,15 +168,17 @@ module lid_mounted_click_lock_tongue (fullDepth = 50, tongueDepth = 30, fingerNo
     }
   }
 
-  fingerNotchWidth = wallMountedClickLockThickness(wall_thickness);
-  clickLockOffset = fullDepth - tongueDepth + wall_thickness;
-  translate([0, -(tongueDepth + clickLockOffset) / 2, 0]) {
-    translate([0, tongueDepth + clickLockOffset, 0]) {
-      lid_mounted_click_lock_tongue_finger_lip(fingerNotchDepth, wall_thickness);
-    }
-
-    translate([0, - fingerNotchDepth, 0]) {
-      lid_mounted_click_lock_tongue_finger_lip(fingerNotchDepth, wall_thickness);
+  if (fingerNotchDepth > 0) {
+    fingerNotchWidth = wallMountedClickLockThickness(wall_thickness);
+    clickLockOffset = fullDepth - tongueDepth + wall_thickness;
+    translate([0, -(tongueDepth + clickLockOffset) / 2, 0]) {
+      translate([0, tongueDepth + clickLockOffset, 0]) {
+        lid_mounted_click_lock_tongue_finger_lip(fingerNotchDepth, wall_thickness);
+      }
+  
+      translate([0, - fingerNotchDepth, 0]) {
+        lid_mounted_click_lock_tongue_finger_lip(fingerNotchDepth, wall_thickness);
+      }
     }
   }
 }
@@ -210,18 +242,19 @@ module double_wall_mount(width) {
 
 
 wall_thickness = 2;
-tolerance = 0.1;
+tolerance = 0;
 tongueDepth = 20;
 fullDepth= 30;
 fingerNotchDepth = 10;
 
 
 // wall_mounted_stopper(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
-// wall_mounted_hinge(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
-// wall_mounted_hinge_tongue(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
+wall_mounted_hinge(wall_thickness=wall_thickness);
+wall_mounted_hinge_tongue(wall_thickness=wall_thickness);
 //lid_mounted_click_lock_tongue_finger_lip (fingerNotchDepth, wall_thickness);
 // lid_mounted_click_lock_tongue_claw();
 
+/*
 difference() {
   union() {
     wall_mounted_click_lock(
@@ -240,8 +273,8 @@ difference() {
     //);
   }
   
-  //translate([-10, 0, -10]) {
+  //translate([-10, 4.5, -10]) {
   //  cube(size=[20, 50, 20]) ;
   //}
 }
-
+*/
