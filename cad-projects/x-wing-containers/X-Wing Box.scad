@@ -6,11 +6,11 @@ clickLockDepth = 50;
 clickLockFingerLipDepth = 30;
 
 module xwing_box_click_lock_tongue(wall_thickness) {
-  lid_mounted_click_lock_tongue(fullDepth = clickLockDepth, tongueDepth = clickLockTongueDepth, fingerNotchDepth = clickLockFingerLipDepth, wall_thickness = wall_thickness, tolerance = 0);
+  wall_mounted_snap_lock_tongue(depth = clickLockTongueDepth, wall_thickness = wall_thickness, tolerance = 0.1);
 }
 
 module xwing_box_click_lock(wall_thickness) {
-  wall_mounted_click_lock(fullDepth = clickLockDepth, tongueDepth = clickLockTongueDepth, wall_thickness = wall_thickness, tolerance = 0);
+  wall_mounted_snap_lock(tongueDepth = clickLockTongueDepth, wall_thickness = wall_thickness, tolerance = 0.1);
 }
 
 module xwing_box(width = 214, depth = 214, height = 60, radius = 5, wall_thickness = 2, inner_wall_thickness = 1.6) {
@@ -19,14 +19,8 @@ module xwing_box(width = 214, depth = 214, height = 60, radius = 5, wall_thickne
     xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
     xwing_box_click_lock(wall_thickness = wall_thickness);
     xwing_box_click_lock(wall_thickness = wall_thickness);
-    double_wall_mount(width) {
-      no_mounts();
-      //wall_mounted_stopper(wall_thickness = wall_thickness, tolerance = 0);
-    }
-    double_wall_mount(width) {
-      no_mounts();
-      //wall_mounted_stopper(wall_thickness = wall_thickness, tolerance = 0);
-    }
+    xwing_box_click_lock(wall_thickness = wall_thickness);
+    xwing_box_click_lock(wall_thickness = wall_thickness);
   }
 
   if ($children > 0) {

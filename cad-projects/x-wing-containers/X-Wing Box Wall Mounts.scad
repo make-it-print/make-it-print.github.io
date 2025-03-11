@@ -81,6 +81,53 @@ module wall_mounted_hinge_tongue (depth = 30, height = 10, wall_thickness = 2, t
   }
 }
 
+module wall_mounted_snap_lock (tongueDepth = 30, wall_thickness = 2, tolerance = 0.1) {
+  height = 10;
+  sideDepth = wall_thickness * 3;
+  fullDepth = tongueDepth + (sideDepth + tolerance) * 2;
+
+  thickness = wallMountedClickLockThickness(wall_thickness);
+
+  difference() {  
+    side_fixture_body (fullDepth, height, wall_thickness, tolerance);
+
+    translate([-tolerance, 0, 0]) {
+      wall_mounted_hinge_lock_tongue_triangle(thickness + tolerance * 2, tongueDepth + tolerance * 4);
+    }
+  }
+}
+
+module wall_mounted_hinge_lock_tongue_triangle (width, depth, tolerance = 0) {
+  translate([0, depth / 2, 0]) {
+    rotate(-90, [0, 0, 1]) {
+      triangular_profile(depth + tolerance, depth + tolerance, width + tolerance);
+    }
+  }
+}
+
+module wall_mounted_snap_lock_tongue (depth = 30, wall_thickness = 2, tolerance = 0.1) {
+  thickness = wallMountedClickLockThickness(wall_thickness);
+  halfThickness = thickness / 2;
+  
+  difference() {
+    translate([-tolerance, 0, 0]) {
+      wall_mounted_hinge_lock_tongue_triangle(thickness + tolerance, depth);
+    }
+
+    translate([-thickness / 2, -depth, wall_thickness * 2]) {
+      cube(size=[thickness * 2, depth * 2, depth]);
+    }
+
+    translate([thickness - wall_thickness, 0, 0]) {
+      rotate(-45, [0, 1, 0]) {
+        translate([0, -depth, -wall_thickness]) {
+          cube(size=[thickness * 2, depth * 2, wall_thickness]);
+        }
+      }
+    }
+  }
+}
+
 function wallMountedClickLockThickness(wall_thickness = 2) = wall_thickness * 1.5;
 
 module side_fixture_body (fullDepth = 50, height = 10, wall_thickness = 2, tolerance = 0.1) {
@@ -243,16 +290,18 @@ module double_wall_mount(width) {
 
 wall_thickness = 2;
 tolerance = 0;
-tongueDepth = 20;
+tongueDepth = 30;
 fullDepth= 30;
 fingerNotchDepth = 10;
 
 
 // wall_mounted_stopper(depth=depth, wall_thickness=wall_thickness, tolerance=tolerance);
-wall_mounted_hinge(wall_thickness=wall_thickness);
-wall_mounted_hinge_tongue(wall_thickness=wall_thickness);
+//wall_mounted_hinge(wall_thickness=wall_thickness);
+//wall_mounted_hinge_tongue(wall_thickness=wall_thickness);
 //lid_mounted_click_lock_tongue_finger_lip (fingerNotchDepth, wall_thickness);
 // lid_mounted_click_lock_tongue_claw();
+wall_mounted_snap_lock(wall_thickness=wall_thickness);
+wall_mounted_snap_lock_tongue(wall_thickness=wall_thickness);
 
 /*
 difference() {
