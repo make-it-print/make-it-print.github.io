@@ -6,7 +6,7 @@ clickLockDepth = 50;
 clickLockFingerLipDepth = 30;
 
 module xwing_box_click_lock_tongue(wall_thickness) {
-  wall_mounted_snap_lock_tongue(depth = clickLockTongueDepth, wall_thickness = wall_thickness, tolerance = 0.1);
+  wall_mounted_snap_lock_tongue(tongueDepth = clickLockTongueDepth, fingerLipDepth = clickLockFingerLipDepth, wall_thickness = wall_thickness, tolerance = 0.1);
 }
 
 module xwing_box_click_lock(wall_thickness) {
@@ -15,6 +15,8 @@ module xwing_box_click_lock(wall_thickness) {
 
 module xwing_box(width = 214, depth = 214, height = 60, radius = 5, wall_thickness = 2, inner_wall_thickness = 1.6) {
   box(wall_thickness, width, depth, height, radius) {
+    xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
+    xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
     xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
     xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
     xwing_box_click_lock(wall_thickness = wall_thickness);
@@ -36,12 +38,20 @@ module xwing_box_lid(width = 214, depth = 214, height = 60, radius = 5, wall_thi
   lid(wall_thickness, width, depth, radius) {
     xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
     xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
+    xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
+    xwing_box_click_lock_tongue(wall_thickness = wall_thickness);
   }
 }
 
+showBox = false;
+showLid = true;
 
-xwing_box();
+if (showBox) {
+  xwing_box();
+}
 
-//translate([0, 0, 65]) {
-//  xwing_box_lid();
-//}
+if (showLid) {
+  translate([0, 0, 65]) {
+    xwing_box_lid();
+  }
+}
