@@ -1,3 +1,5 @@
+use <Box Compartment.scad>
+
 function getOffset(inner_wall_width, width, hole_width) = (width - (hole_width + inner_wall_width * 2) )/2;
 function movementDialWidth() = 54;
 function movementDialDepth() = 8;
@@ -103,17 +105,47 @@ module movement_dial_holder_surface(inner_wall_width = 1.6, width = 214, depth =
 inner_wall_width = 1.6;
 depth = 8;
 singleDial = true;
+boxWidth = movementDialWidth() * 2 + inner_wall_width * 2;
+boxDepth = movementDialDepth() * 6 + inner_wall_width * 2;
+boxHeight = 40;
 
 if (singleDial) {
-  %movement_dial_holder_even(inner_wall_width);
+  movement_dial_holder_even(inner_wall_width);
   
   translate([0, depth + inner_wall_width, 0]) {
-    %movement_dial_holder_odd(inner_wall_width);
+    movement_dial_holder_odd(inner_wall_width);
   }
 } else {
-  translate([0, 0, -10]) {
-    %cube(size=[220,220, 10]);
+  translate([0, 0, -0.8]) {
+    cube(size=[boxWidth,boxDepth, 0.9]);
   }
+
+  extraWallWidth = 10;
+  translate([boxWidth / 2 - extraWallWidth / 2, 0, 0]) {
+    cube(size=[extraWallWidth, inner_wall_width, boxHeight]);
+
+    translate([0, boxDepth - inner_wall_width, 0]) {
+      cube(size=[extraWallWidth, inner_wall_width, boxHeight]);
+    }
+  }
+
+  translate([boxWidth / 4 - extraWallWidth / 2, 0, 0]) {
+    translate([0, boxDepth - inner_wall_width, 0]) {
+      cube(size=[extraWallWidth, inner_wall_width, boxHeight]);
+    }
+  }
+
+  translate([boxWidth / 2 + boxWidth / 4 - extraWallWidth / 2, 0, 0]) {
+    translate([0, boxDepth - inner_wall_width, 0]) {
+      cube(size=[extraWallWidth, inner_wall_width, boxHeight]);
+    }
+  }
+
+  box_compartment(
+    width = boxWidth - inner_wall_width * 2, 
+    depth = boxDepth - inner_wall_width * 2,
+    height = boxHeight,
+    cornerSize = [10, 5]);
   
-  movement_dial_holder_surface();
+  movement_dial_holder_surface(inner_wall_width, boxWidth, boxDepth);
 }
