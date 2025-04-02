@@ -54,12 +54,21 @@ module small_base_holder_surface(width, depth, wall_thickness = 1.6) {
   }
 }
 
-module large_base_holder_compartment(size = 86, height = 40, wall_thickness = 1.6) {
-  box_compartment(size, size, height, wall_thickness);
+function largeBaseHolderSize() = 86;
+function mediumBaseHolderSize() = 68;
+
+module large_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6) {
+  width = is_undef(width) ? largeBaseHolderSize() : width;
+  depth = is_undef(depth) ? largeBaseHolderSize() : depth;
+
+  box_compartment(width, depth, height, wall_thickness);
 }
 
-module medium_base_holder_compartment(size = 68, height = 40, wall_thickness = 1.6) {
-  box_compartment(size, size, height, wall_thickness);
+module medium_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6) {
+  width = is_undef(width) ? mediumBaseHolderSize() : width;
+  depth = is_undef(depth) ? mediumBaseHolderSize() : depth;
+
+  box_compartment(width, depth, height, wall_thickness);
 }
 
 translate([0, 0, -10]) {

@@ -10,8 +10,8 @@ box_wall_thickness = 2;
 inner_wall_thickness = 1.6;
 
 xwing_box(width = box_width, depth = box_depth, height = height, inner_wall_thickness = inner_wall_thickness) {
-  medium_base_holder_width = 68;
-  large_base_holder_width = 86;
+  medium_base_holder_width = mediumBaseHolderSize();
+  large_base_holder_width = largeBaseHolderSize();
   
   box_inner_width = box_width - box_wall_thickness * 2;
   box_inner_depth = box_depth - box_wall_thickness * 2;
@@ -25,14 +25,14 @@ xwing_box(width = box_width, depth = box_depth, height = height, inner_wall_thic
     small_base_holder_surface(smallBaseHolderWidth(inner_wall_thickness) + inner_wall_thickness, box_inner_depth + inner_wall_thickness * 2, wall_thickness = inner_wall_thickness);
   
     translate([small_base_holders_width, 0, 0]) {
-      large_base_holder_compartment(wall_thickness = inner_wall_thickness);
+      large_base_holder_compartment(depth = large_base_holder_width + 4, wall_thickness = inner_wall_thickness);
   
       translate([large_base_holder_width + inner_wall_thickness, 0, 0]) {
-        medium_base_holder_compartment();
+        medium_base_holder_compartment(wall_thickness = inner_wall_thickness);
       }
   
       translate([large_base_holder_width + inner_wall_thickness, medium_base_holder_width + inner_wall_thickness, 0]) {
-        box_compartment(medium_base_holder_width, large_base_holder_width - medium_base_holder_width - inner_wall_thickness);
+        box_compartment(medium_base_holder_width, large_base_holder_width - medium_base_holder_width - inner_wall_thickness + 4);
       }
   
       translate([inner_wall_thickness, large_base_holder_width + inner_wall_thickness * 2, 0]) {

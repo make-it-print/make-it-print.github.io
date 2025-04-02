@@ -133,16 +133,18 @@ module movement_dial_holder_surface(inner_wall_width = 1.6, width = 214, depth =
   movement_dial_depth = movementDialDepth();
   
   movement_dial_row_depth = movementDialRowDepth(inner_wall_width);
-  row_count = movementDialRowCount(depth, inner_wall_width);
+  backWallOffset = movement_dial_row_depth + inner_wall_width;
+  row_count = movementDialRowCount(depth - backWallOffset, inner_wall_width);
   column_count = movementDialColumnCount(width);
 
   movement_dial_surface_depth = movementDialSurfaceDepth(row_count, inner_wall_width);
   movement_dial_surface_width = movementDialSurfaceWidth(column_count);
   
-  movement_dial_surface_y_offset = (depth - (movement_dial_surface_depth + inner_wall_width))/2;
+  movement_dial_surface_y_offset = depth - backWallOffset - movement_dial_surface_depth - inner_wall_width;
   movement_dial_surface_x_offset = (width - movement_dial_surface_width)/2;
   
-  translate([movement_dial_surface_x_offset, movement_dial_surface_y_offset, 0]) {  
+  translate([movement_dial_surface_x_offset, movement_dial_surface_y_offset, 0]) {
+    *cube(size=[movement_dial_surface_width, movement_dial_surface_depth, 10]);
     for(x=[0:1:column_count - 1]) // repeat the following with two variants for x
     {
       for(i=[0:1:row_count - 1])
