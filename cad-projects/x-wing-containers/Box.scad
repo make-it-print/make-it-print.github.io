@@ -115,6 +115,19 @@ module wall_reinforcement(wall_width = 2, width = 220, depth = 220, height=45, r
   }
 }
 
+module boxOuterWallClipShape(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
+  negativeWallsWidth = wall_width * 10;
+  translate([-negativeWallsWidth, -negativeWallsWidth, 0]) {
+    box_walls(
+      negativeWallsWidth, 
+      width + negativeWallsWidth * 2, 
+      depth + negativeWallsWidth * 2, 
+      height + wall_width * 2, 
+      radius + negativeWallsWidth, 
+      radius + negativeWallsWidth);
+  }
+}
+
 module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
   box_base(wall_width, width, depth, height, radius, false);
  

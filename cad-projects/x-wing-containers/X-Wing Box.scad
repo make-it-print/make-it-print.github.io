@@ -26,9 +26,16 @@ module xwing_box(width = 214, depth = 214, height = 60, radius = 5, wall_thickne
   }
 
   if ($children > 0) {
-    translate([wall_thickness, wall_thickness, wall_thickness]) {
-      for(i=[0:$children-1])
-        children(i);  
+    difference() {
+      union() {
+        translate([wall_thickness, wall_thickness, wall_thickness]) {
+          for(i=[0:$children-1])
+            children(i);  
+        }
+      }
+
+      if (!$preview)
+        boxOuterWallClipShape(wall_thickness, width, depth, height, radius);
     }
   }
 }
@@ -43,8 +50,8 @@ module xwing_box_lid(width = 214, depth = 214, height = 60, radius = 5, wall_thi
   }
 }
 
-showBox = false;
-showLid = true;
+showBox = true;
+showLid = false;
 
 if (showBox) {
   xwing_box();
