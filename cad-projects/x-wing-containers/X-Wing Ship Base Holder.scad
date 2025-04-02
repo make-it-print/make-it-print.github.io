@@ -25,7 +25,7 @@ module small_base_holder_surface(width, depth, wall_thickness = 1.6) {
   endOffset = 5;
   startOffset = holder_depth - endOffset;
 
-  row_count = floor((depth - endOffset) / holder_depth);
+  row_count = floor((depth - wall_thickness - endOffset) / holder_depth);
   column_count = floor(width / holder_width);
   
   for(x=[0:1:column_count-1]) {
@@ -47,29 +47,8 @@ module small_base_holder_surface(width, depth, wall_thickness = 1.6) {
     }
 
     translate([holder_width * x, 0, 0]) {
-      translate([0, depth, 0]) {
+      translate([0, depth - wall_thickness, 0]) {
         cube(size=[holder_width + wall_thickness, wall_thickness, holder_height]);
-      }
-    }
-  }
-}
-
-module small_base_holder_grid(row_count = 10, column_count = 2, height = 8, wall_thickness = 1.6) {
-  width = smallBaseHolderWidth(wall_thickness);
-  depth = smallBaseHolderDepth(wall_thickness);
-  
-  for(x=[0:1:column_count-1]) {
-    for(y=[0:1:row_count-1]) {
-      translate([width * x, depth * y, 0]) {
-        small_base_holder(height, wall_thickness);
-      }
-    }
-
-    *translate([width * x, 0, 0]) {
-      cube(size=[width + wall_thickness, wall_thickness, height]);
-      
-      translate([0, depth * row_count, 0]) {
-        cube(size=[width + wall_thickness, wall_thickness, height]);
       }
     }
   }
@@ -90,15 +69,16 @@ translate([0, 0, -10]) {
 inner_wall_thickness = 1.6;
 rowCount = 6;
 
-compartmentWidth = smallBaseHolderWidth(inner_wall_thickness);
-compartmentDepth = smallBaseHolderDepth(inner_wall_thickness) * rowCount;
+compartmentWidth = smallBaseHolderWidth(inner_wall_thickness) + inner_wall_thickness;
+compartmentDepth = smallBaseHolderDepth(inner_wall_thickness) * rowCount + inner_wall_thickness;
 
 box_compartment(
-  width = compartmentWidth - inner_wall_thickness, 
-  depth = compartmentDepth - inner_wall_thickness,
+  width = compartmentWidth - inner_wall_thickness * 2, 
+  depth = compartmentDepth - inner_wall_thickness * 2,
   height = 40,
   cornerSize = [10, 5]);
 
+*cube(size=[compartmentWidth, compartmentDepth, 10]);
 translate([0, 0, 0]) {
   small_base_holder_surface(compartmentWidth, compartmentDepth, inner_wall_thickness);
 }

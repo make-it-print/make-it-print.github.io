@@ -25,12 +25,12 @@ module movement_dial_holder_separator(inner_wall_width = 1.6) {
   }
 }
 
-module movement_dial_holder_cut_box(angle, inner_wall_width) {
+module movement_dial_holder_cut_box(angle) {
   height = movementDialHeight();
 
   rotate(90, angle) {
     rotate(0, [0, 0, 1]) {
-      cube(size=[height, height, height*2.3], center=true);
+      cube(size=[height, height, height*2], center=true);
     }
   }
 }
@@ -43,46 +43,30 @@ module movement_dial_holder_cut_outs(inner_wall_width, even = true) {
   separatorWidth = movementDialSeparatorWidth(hole_width, offset, inner_wall_width);
 
   depthOffset1 = even ? depth + inner_wall_width * 2 : inner_wall_width;
-  depthOffset2 = depth + inner_wall_width;
+  depthOffset2 = even ? inner_wall_width : depth + inner_wall_width * 2;
 
   translate([offset, 0, 0]) {
     translate([0, depthOffset1, 0]) {
       translate([0, 0, 0]) {
-        movement_dial_holder_cut_box([1, 1, 0], inner_wall_width);
+        movement_dial_holder_cut_box([1, 1, 0]);
       }
     
       translate([hole_width + inner_wall_width * 2, 0, 0]) {
-        movement_dial_holder_cut_box([-1, 1, 0], inner_wall_width);
+        movement_dial_holder_cut_box([-1, 1, 0]);
       }
     }
 
-    if (even) {
-      translate([0, 0, 0]) {
-        translate([separatorWidth, 0, 0]) {
-          rotate(45, [0, 10, 0]) {
-            cube(size=[height, height, height + inner_wall_width], center=true);
-          }
-        }
-    
-        translate([hole_width  + inner_wall_width*2 - separatorWidth, 0, 0]) {
-          rotate(-45, [0, 10, 0]) {
-            cube(size=[height, height, height + inner_wall_width], center=true);
-          }
-        }
+    translate([0, depthOffset2, 0]) {
+      translate([separatorWidth, 0, 0]) {
+        movement_dial_holder_cut_box([-1, 1, 0]);
+
+        if (even)
+          translate([0, 0, 0])
+            movement_dial_holder_cut_box([-1, 1, 0]);
       }
-    } else {
-      translate([0, depthOffset2, 0]) {
-        translate([separatorWidth, 0, 0]) {
-          rotate(-45, [10, 0, 0]) {
-            cube(size=[height, height, height + inner_wall_width], center=true);
-          }
-        }
     
-        translate([hole_width  + inner_wall_width*2 - separatorWidth, 0, 0]) {
-          rotate(-45, [10, 0, 0]) {
-            cube(size=[height, height, height + inner_wall_width], center=true);
-          }
-        }
+      translate([hole_width + inner_wall_width * 2 - separatorWidth, 0, 0]) {
+        movement_dial_holder_cut_box([1, 1, 0]);
       }
     }
   }
@@ -181,8 +165,8 @@ module movement_dial_holder_surface(inner_wall_width = 1.6, width = 214, depth =
 
 inner_wall_width = 1.6;
 depth = 8;
-singleDial = true;
-addWalls = false;
+singleDial = false;
+addWalls = true;
 boxWidth = movementDialWidth() * 2 + inner_wall_width * 2;
 boxDepth = movementDialDepth() * 6 + inner_wall_width * 2;
 boxHeight = 40;
@@ -193,9 +177,9 @@ if (singleDial) {
   translate([0, depth + inner_wall_width, 0]) {
     movement_dial_holder_odd(inner_wall_width);
 
-    translate([0, depth + inner_wall_width, 0]) {
-      movement_dial_holder_even(inner_wall_width);
-    }
+     translate([0, depth + inner_wall_width, 0]) {
+       movement_dial_holder_even(inner_wall_width);
+     }
   }
 } else {
   translate([0, 0, -0.8]) {
