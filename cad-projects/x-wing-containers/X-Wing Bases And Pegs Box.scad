@@ -1,3 +1,4 @@
+include <Box Properties.scad>
 use <Box.scad>
 use <X-Wing Box.scad>
 use <Box Compartment.scad>
@@ -10,17 +11,19 @@ height = 40;
 box_wall_thickness = 2;
 inner_wall_thickness = 1.6;
 
-xwing_box(width = box_width, depth = box_depth, height = height, inner_wall_thickness = inner_wall_thickness) {
+boxProperties = createBoxProperties(box_width, box_depth, height, box_wall_thickness);
+
+xwing_box(boxProperties) {
   medium_base_holder_width = mediumBaseHolderSize();
   large_base_holder_width = largeBaseHolderSize();
   
-  box_inner_width = boxInnerWidth(box_width, box_wall_thickness);
-  box_inner_depth = boxInnerDepth(box_depth, box_wall_thickness);
+  box_inner_width = boxInnerWidth(boxProperties.x, boxProperties[WallThickness]);
+  box_inner_depth = boxInnerDepth(boxProperties.y, boxProperties[WallThickness]);
 
   small_base_holders_width = smallBaseHolderWidth(inner_wall_thickness);
 
-  dials_width = box_width - 4 - small_base_holders_width;
-  dials_depth = box_depth - 4 - large_base_holder_width - inner_wall_thickness;
+  dials_width = boxProperties.x - 4 - small_base_holders_width;
+  dials_depth = boxProperties.y - 4 - large_base_holder_width - inner_wall_thickness;
 
   translate([-inner_wall_thickness, -inner_wall_thickness, 0]) {
     small_base_holder_surface(smallBaseHolderWidth(inner_wall_thickness) + inner_wall_thickness, box_inner_depth + inner_wall_thickness * 2, wall_thickness = inner_wall_thickness);

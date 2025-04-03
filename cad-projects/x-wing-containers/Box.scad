@@ -1,3 +1,4 @@
+include <Box Properties.scad>
 use <X-Wing Box Slide Clamp.scad>
 use <X-Wing Box Wall Mounts.scad>
 
@@ -130,21 +131,6 @@ module boxOuterWallClipShape(wall_width = 2, width = 220, depth = 220, height=45
 
 function boxInnerWidth(width, wall_thickness = 2) = width - wall_thickness * 2;
 function boxInnerDepth(depth, wall_thickness = 2) = depth - wall_thickness * 2;
-
-// TODO
-WallThickness = 3;
-CornerRadius = 4;
-Tolerance = 5;
-function createBoxProperties(width = 214, depth = 214, height = 60, wall_thickness = 2, radius = 10, tolerance = 0.1) = [width, depth, height, wall_thickness, radius, tolerance];
-
-function mutateBoxProperties(boxProperties, width, depth, height, wall_thickness, radius, tolerance) = [
-  is_undef(width) ? boxProperties.x : width, 
-  is_undef(depth) ? boxProperties.y : depth, 
-  is_undef(height) ? boxProperties.z : height, 
-  is_undef(wall_thickness) ? boxProperties[WallThickness] : wall_thickness, 
-  is_undef(radius) ? boxProperties[CornerRadius] : radius, 
-  is_undef(tolerance) ? boxProperties[Tolerance] : tolerance
-];
 
 
 module box(boxProperties) {
