@@ -1,27 +1,27 @@
 use <X-Wing Box Slide Clamp.scad>
 use <X-Wing Box Wall Mounts.scad>
 
-module place_wall_mounts_x(box_width, box_depth)
+module place_wall_mounts_x(boxProperties)
 {
-  translate([0, box_depth / 2, 0]) {
+  translate([0, boxProperties.y / 2, 0]) {
     rotate(180, [0, 0, 1]) {
       children(0);
     }
 
-    translate([box_width, 0, 0]) {
+    translate([boxProperties.x, 0, 0]) {
         children(1);
     }
   }
 }
 
-module place_wall_mounts_y(box_width, box_depth)
+module place_wall_mounts_y(boxProperties)
 {
-  translate([box_width / 2, 0, 0]) {
+  translate([boxProperties.x / 2, 0, 0]) {
     rotate(-90, [0, 0, 1]) {
       children(0);
     }
 
-    translate([0, box_depth, 0]) {
+    translate([0, boxProperties.y, 0]) {
       rotate(90, [0, 0, 1]) {
           children(1);
       }
@@ -134,34 +134,44 @@ function boxInnerDepth(depth, wall_thickness = 2) = depth - wall_thickness * 2;
 // TODO
 WallThickness = 3;
 CornerRadius = 4;
-function createBoxProperties(width, depth, height, wall_thickness, radius) = [width, depth, height, wall_thickness, radius];
+Tolerance = 5;
+function createBoxProperties(width = 214, depth = 214, height = 60, wall_thickness = 2, radius = 10, tolerance = 0.1) = [width, depth, height, wall_thickness, radius, tolerance];
+
+function mutateBoxProperties(boxProperties, width, depth, height, wall_thickness, radius, tolerance) = [
+  is_undef(width) ? boxProperties.x : width, 
+  is_undef(depth) ? boxProperties.y : depth, 
+  is_undef(height) ? boxProperties.z : height, 
+  is_undef(wall_thickness) ? boxProperties[WallThickness] : wall_thickness, 
+  is_undef(radius) ? boxProperties[CornerRadius] : radius, 
+  is_undef(tolerance) ? boxProperties[Tolerance] : tolerance
+];
 
 
-module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
-  box_base(wall_width, width, depth, height, radius, false);
+module box(boxProperties) {
+  box_base(boxProperties[WallThickness], boxProperties.x, boxProperties.y, boxProperties.z, boxProperties[CornerRadius], false);
  
   if ($children > 0) {
     // base mounts
-    place_wall_mounts_x(box_width = width, box_depth = depth) {
+    place_wall_mounts_x(boxProperties) {
       children(0);
       children(1);
     }
 
-    place_wall_mounts_y(box_width = width, box_depth = depth) {
+    place_wall_mounts_y(boxProperties) {
       children(2);
       children(3);
     }
     
-    translate([0, 0, height + wall_width]) {
-      wall_reinforcement(wall_width, width, depth, height, radius);
-      place_wall_mounts_x(box_width = width, box_depth = depth) {
+    translate([0, 0, boxProperties.z + boxProperties[WallThickness]]) {
+      wall_reinforcement(boxProperties[WallThickness], boxProperties.x, boxProperties.y, boxProperties.z, boxProperties[CornerRadius]);
+      place_wall_mounts_x(boxProperties) {
         children(4);
         children(5);
       }
     }
   
-    translate([0, 0, height + wall_width]) {
-      place_wall_mounts_y(box_width = width, box_depth = depth) {
+    translate([0, 0, boxProperties.z + boxProperties[WallThickness]]) {
+      place_wall_mounts_y(boxProperties) {
         children(6);
         children(7);
       }
@@ -169,36 +179,36 @@ module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
   }
 }
 
-module lid(wall_width = 2, width = 220, depth = 220, radius=10, tolerance = 0.1) {
-  height = wall_width;
+module lid(boxProperties) {
+  boxProperties = mutateBoxProperties(boxProperties, height = boxProperties[WallThickness]);
 
   // Bottom nothces
-  translate([wall_width + tolerance, wall_width + tolerance, -height]) {
+  translate([boxProperties[WallThickness] + boxProperties[Tolerance], boxProperties[WallThickness] + boxProperties[Tolerance], -boxProperties.z]) {
     difference() {
-      bottomNotchWidth = width - (wall_width + tolerance) * 2;
-      bottomNotchDepth = depth - (wall_width + tolerance) * 2;
-      box_walls(wall_width, bottomNotchWidth, bottomNotchDepth, height, radius, radius);
+      bottomNotchWidth = boxProperties.x - (boxProperties[WallThickness] + boxProperties[Tolerance]) * 2;
+      bottomNotchDepth = boxProperties.y - (boxProperties[WallThickness] + boxProperties[Tolerance]) * 2;
+      box_walls(boxProperties[WallThickness], bottomNotchWidth, bottomNotchDepth, boxProperties.z, boxProperties[CornerRadius], boxProperties[CornerRadius]);
 
-      translate([-wall_width, radius, -wall_width]) {
-        cube(size=[width + wall_width * 2, bottomNotchDepth - radius * 2, 10]);
+      translate([-boxProperties[WallThickness], boxProperties[CornerRadius], -boxProperties[WallThickness]]) {
+        cube(size=[boxProperties.x + boxProperties[WallThickness] * 2, bottomNotchDepth - boxProperties[CornerRadius] * 2, 10]);
       }
 
-      translate([radius, -wall_width, -wall_width]) {
-        cube(size=[bottomNotchWidth - radius * 2, depth + wall_width * 2, 10]);
+      translate([boxProperties[CornerRadius], -boxProperties[WallThickness], -boxProperties[WallThickness]]) {
+        cube(size=[bottomNotchWidth - boxProperties[CornerRadius] * 2, boxProperties.y + boxProperties[WallThickness] * 2, 10]);
       }
     }
   }
 
   // reinforcement
-  box_walls(wall_width * 2.1, width, depth, height, radius, radius);
+  box_walls(boxProperties[WallThickness] * 2.1, boxProperties.x, boxProperties.y, boxProperties.z, boxProperties[CornerRadius], boxProperties[CornerRadius]);
 
   // top
-  translate([0, 0, height]) {
-    box_base(wall_width, width, depth, 0, radius, true);
+  translate([0, 0, boxProperties.z]) {
+    box_base(boxProperties[WallThickness], boxProperties.x, boxProperties.y, 0, boxProperties[CornerRadius], true);
   }
 
   if ($children > 0) {
-    place_wall_mounts_x(box_width = width, box_depth = depth) {
+    place_wall_mounts_x(boxProperties) {
       children(0);
       if ($children > 1)
         children(1);
@@ -206,7 +216,7 @@ module lid(wall_width = 2, width = 220, depth = 220, radius=10, tolerance = 0.1)
   }
 
   if ($children > 2) {
-    place_wall_mounts_y(box_width = width, box_depth = depth) {
+    place_wall_mounts_y(boxProperties) {
       children(2);
       if ($children > 3)
         children(3);
@@ -232,8 +242,10 @@ if (prod) {
   depth = 220 - 6;
   height = 60;
 
-  if (showBox)
-    box(wall_width, width, depth, height, radius) {
+  properties = createBoxProperties(width, depth, height, wall_width, radius, tolerance);
+
+  if (showBox) {
+    box(properties) {
       lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
       lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
       lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
@@ -251,10 +263,11 @@ if (prod) {
     //translate([0, 0, wall_width]) {
     //  box_walls(wall_width, width, depth, 10, radius, radius + wall_width);
     //}
-  
+  }
+
   if (showLid)
     translate([0, 0, height + wall_width  + 10]) {
-      lid(wall_width, width, depth, radius) {
+      lid(properties) {
         lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
         lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
         lid_mounted_click_lock_tongue(wall_thickness = wall_width, tolerance = 0);
@@ -268,8 +281,10 @@ else
   fullDepth= 30;
   fingerLipDepth = 10;
   
-  if (showBox)
-    box(wall_width, width, depth, height, radius) {
+  properties = createBoxProperties(width, depth, height, wall_width, radius);
+  
+  if (showBox) {
+    box(properties) {
       no_mounts();
       wall_mounted_snap_lock_tongue(tongueDepth=tongueDepth, fingerLipDepth = fingerLipDepth, wall_thickness = wall_width);
       no_mounts();
@@ -281,10 +296,11 @@ else
       no_mounts();
       no_mounts();
     }
-  
+  }
+
   if (showLid)
     translate([0, 0, height + wall_width + 10]) {
-      lid(wall_width, width, depth, radius) {
+      lid(properties) {
         //lid_mounted_click_lock_tongue(fullDepth = fullDepth, tongueDepth=tongueDepth, fingerLipDepth = fingerLipDepth, wall_thickness = wall_width, tolerance = 0);
         no_mounts();
         //lid_mounted_click_lock_tongue(fullDepth = fullDepth, tongueDepth=tongueDepth, fingerLipDepth = fingerLipDepth, wall_thickness = wall_width, tolerance = 0);
