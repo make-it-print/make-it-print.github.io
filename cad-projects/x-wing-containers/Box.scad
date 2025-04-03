@@ -128,6 +128,15 @@ module boxOuterWallClipShape(wall_width = 2, width = 220, depth = 220, height=45
   }
 }
 
+function boxInnerWidth(width, wall_thickness = 2) = width - wall_thickness * 2;
+function boxInnerDepth(depth, wall_thickness = 2) = depth - wall_thickness * 2;
+
+// TODO
+WallThickness = 3;
+CornerRadius = 4;
+function createBoxProperties(width, depth, height, wall_thickness, radius) = [width, depth, height, wall_thickness, radius];
+
+
 module box(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
   box_base(wall_width, width, depth, height, radius, false);
  

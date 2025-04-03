@@ -1,3 +1,4 @@
+use <Box.scad>
 use <X-Wing Box.scad>
 use <Box Compartment.scad>
 use <X-Wing Ship Base Holder.scad>
@@ -13,8 +14,8 @@ xwing_box(width = box_width, depth = box_depth, height = height, inner_wall_thic
   medium_base_holder_width = mediumBaseHolderSize();
   large_base_holder_width = largeBaseHolderSize();
   
-  box_inner_width = box_width - box_wall_thickness * 2;
-  box_inner_depth = box_depth - box_wall_thickness * 2;
+  box_inner_width = boxInnerWidth(box_width, box_wall_thickness);
+  box_inner_depth = boxInnerDepth(box_depth, box_wall_thickness);
 
   small_base_holders_width = smallBaseHolderWidth(inner_wall_thickness);
 

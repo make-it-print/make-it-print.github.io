@@ -133,7 +133,7 @@ module movement_dial_holder_surface(inner_wall_width = 1.6, width = 214, depth =
   movement_dial_depth = movementDialDepth();
   
   movement_dial_row_depth = movementDialRowDepth(inner_wall_width);
-  backWallOffset = movement_dial_row_depth + inner_wall_width;
+  backWallOffset = movement_dial_row_depth * 2 + inner_wall_width;
   row_count = movementDialRowCount(depth - backWallOffset, inner_wall_width);
   column_count = movementDialColumnCount(width);
 
