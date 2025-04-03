@@ -33,16 +33,19 @@ module place_wall_mounts_y(boxProperties)
 function max(a, b) = a > b ? a : b;
 function min(a, b) = a < b ? a : b;
 
-module box_base_shape(width, depth, height, top_radius, bottom_radius) {
+module box_base_shape(boxProperties, top_radius, bottom_radius) {
   $fn = $preview ? 16 : 64;
+
+  top_radius = getRadius(top_radius, boxProperties);
+  bottom_radius = getRadius(bottom_radius, boxProperties);
 
   hull() {
     offset = max(top_radius, bottom_radius);
 
-    for (x=[offset, width - offset]) {
-      for (y=[offset, depth - offset]) {
+    for (x=[offset, boxProperties.x - offset]) {
+      for (y=[offset, boxProperties.y - offset]) {
         translate([x, y, 0]) {
-          cylinder(r1 = bottom_radius, r2 = top_radius, h = height);  
+          cylinder(r1 = bottom_radius, r2 = top_radius, h = boxProperties.z);  
         }
       }
     }
@@ -51,81 +54,94 @@ module box_base_shape(width, depth, height, top_radius, bottom_radius) {
 
 function getRadiusOrMinimum(radius, min) = radius < min ? min : radius;
 
-module box_walls(wall_width = 2, width = 220, depth = 220, height=50, top_radius=10, bottom_radius=10) {
-  difference() {
-    box_base_shape(width, depth, height, top_radius, bottom_radius);
-    translate([0, 0, -wall_width]) {
-      negative_top_radius = getRadiusOrMinimum(top_radius - wall_width, 1);
-      negative_bottom_radius = getRadiusOrMinimum(bottom_radius - wall_width, 1);
+module box_walls(boxProperties, top_radius, bottom_radius) {
+  top_radius = getRadius(top_radius, boxProperties);
+  bottom_radius = getRadius(bottom_radius, boxProperties);
 
-      translate([wall_width, wall_width, 0]) {
-        box_base_shape(
-          width - wall_width * 2, 
-          depth - wall_width * 2, 
-          height + wall_width * 2, 
-          negative_top_radius, 
-          negative_bottom_radius);
+  difference() {
+    box_base_shape(boxProperties, top_radius, bottom_radius);
+    translate([0, 0, -boxProperties[WallThickness]]) {
+      negative_top_radius = getRadiusOrMinimum(top_radius - boxProperties[WallThickness], 1);
+      negative_bottom_radius = getRadiusOrMinimum(bottom_radius - boxProperties[WallThickness], 1);
+
+      translate([boxProperties[WallThickness], boxProperties[WallThickness], 0]) {
+        negativeProperties = mutateBoxProperties(
+          boxProperties,
+          width = boxProperties.x - boxProperties[WallThickness] * 2, 
+          depth = boxProperties.y - boxProperties[WallThickness] * 2, 
+          height = boxProperties.z + boxProperties[WallThickness] * 2);
+
+        box_base_shape(negativeProperties, negative_top_radius, negative_bottom_radius);
       }
     }
   }
 }
 
-module box_base(wall_width = 2, width = 220, depth = 220, height=50, radius=10, lid = false) {
+module box_base(boxProperties, lid = false) {
   union() {
     // Bottom
-    box_base_shape(width, depth, wall_width, radius, radius);
+    bottomProperties = mutateBoxProperties(boxProperties, height = boxProperties[WallThickness]);
+    box_base_shape(bottomProperties);
       
     // Walls
-    translate([0, 0, wall_width]) {
+    translate([0, 0, boxProperties[WallThickness]]) {
       if (!lid) {
-        box_walls(wall_width, width, depth, height, radius, radius);
+        box_walls(boxProperties);
       }
     }
   }
 }
 
-module wall_reinforcement(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
+module wall_reinforcement(boxProperties) {
   reinforcementHeight = 6;
-  reinforcementWidth = width + wall_width * 2;
-  reinforcementDepth = depth + wall_width * 2;
-  reinforcementRadius = radius + wall_width;
+  reinforcementWidth = boxProperties.x + boxProperties[WallThickness] * 2;
+  reinforcementDepth = boxProperties.y + boxProperties[WallThickness] * 2;
+  reinforcementRadius = boxProperties[CornerRadius] + boxProperties[WallThickness];
 
-  translate([-wall_width, -wall_width, -reinforcementHeight]) {
-    box_walls(wall_width, reinforcementWidth, reinforcementDepth, reinforcementHeight, reinforcementRadius, radius);
+  translate([-boxProperties[WallThickness], -boxProperties[WallThickness], -reinforcementHeight]) {
+    reinforcementProps = mutateBoxProperties(
+      boxProperties, 
+      width = reinforcementWidth, 
+      depth = reinforcementDepth, 
+      height = reinforcementHeight);
+
+    box_walls(reinforcementProps, reinforcementRadius, boxProperties[CornerRadius]);
+
     translate([0, 0, reinforcementHeight]) {
       difference() {
-        box_walls(
-          wall_width = wall_width, 
-          width = reinforcementWidth, 
-          depth = reinforcementDepth, 
-          height = wall_width * 2, 
-          top_radius = reinforcementRadius, 
-          bottom_radius = reinforcementRadius);
 
-        gapSizeX = width / 2;
-        gapSizeY = depth / 2;
-        translate([-wall_width - 0.01, (reinforcementDepth - gapSizeY) / 2, 0]) {
-          cube(size=[reinforcementWidth + wall_width * 2, gapSizeY, 10]);
+        reinforcementNegativeProps = mutateBoxProperties(
+          reinforcementProps, 
+          height = boxProperties[WallThickness] * 2);
+        box_walls(reinforcementNegativeProps, top_radius = reinforcementRadius, bottom_radius = reinforcementRadius);
+
+        gapSizeX = boxProperties.x / 2;
+        gapSizeY = boxProperties.y / 2;
+        translate([-boxProperties[WallThickness] - 0.01, (reinforcementDepth - gapSizeY) / 2, 0]) {
+          cube(size=[reinforcementWidth + boxProperties[WallThickness] * 2, gapSizeY, 10]);
         }
 
-        translate([(reinforcementWidth - gapSizeX) / 2, -wall_width - 0.01, 0]) {
-          cube(size=[gapSizeX, reinforcementDepth + wall_width * 2, 10]);
+        translate([(reinforcementWidth - gapSizeX) / 2, -boxProperties[WallThickness] - 0.01, 0]) {
+          cube(size=[gapSizeX, reinforcementDepth + boxProperties[WallThickness] * 2, 10]);
         }
       }
     }
   }
 }
 
-module boxOuterWallClipShape(wall_width = 2, width = 220, depth = 220, height=45, radius=10) {
-  negativeWallsWidth = wall_width * 10;
+module boxOuterWallClipShape(boxProperties) {
+  negativeWallsWidth = boxProperties[WallThickness] * 10;
+
   translate([-negativeWallsWidth, -negativeWallsWidth, 0]) {
-    box_walls(
-      negativeWallsWidth, 
-      width + negativeWallsWidth * 2, 
-      depth + negativeWallsWidth * 2, 
-      height + wall_width * 2, 
-      radius + negativeWallsWidth, 
-      radius + negativeWallsWidth);
+    properties = mutateBoxProperties(boxProperties,
+      wall_thickness = negativeWallsWidth,
+      width = boxProperties.x + negativeWallsWidth * 2, 
+      depth = boxProperties.y + negativeWallsWidth * 2, 
+      height = boxProperties.z + boxProperties[WallThickness] * 2,
+      radius = boxProperties[CornerRadius] + negativeWallsWidth
+    );
+
+    box_walls(properties);
   }
 }
 
@@ -134,7 +150,7 @@ function boxInnerDepth(depth, wall_thickness = 2) = depth - wall_thickness * 2;
 
 
 module box(boxProperties) {
-  box_base(boxProperties[WallThickness], boxProperties.x, boxProperties.y, boxProperties.z, boxProperties[CornerRadius], false);
+  box_base(boxProperties, false);
  
   if ($children > 0) {
     // base mounts
@@ -149,7 +165,7 @@ module box(boxProperties) {
     }
     
     translate([0, 0, boxProperties.z + boxProperties[WallThickness]]) {
-      wall_reinforcement(boxProperties[WallThickness], boxProperties.x, boxProperties.y, boxProperties.z, boxProperties[CornerRadius]);
+      wall_reinforcement(boxProperties);
       place_wall_mounts_x(boxProperties) {
         children(4);
         children(5);
@@ -173,7 +189,8 @@ module lid(boxProperties) {
     difference() {
       bottomNotchWidth = boxProperties.x - (boxProperties[WallThickness] + boxProperties[Tolerance]) * 2;
       bottomNotchDepth = boxProperties.y - (boxProperties[WallThickness] + boxProperties[Tolerance]) * 2;
-      box_walls(boxProperties[WallThickness], bottomNotchWidth, bottomNotchDepth, boxProperties.z, boxProperties[CornerRadius], boxProperties[CornerRadius]);
+      notchProperties = mutateBoxProperties(boxProperties, width = bottomNotchWidth, depth = bottomNotchDepth);
+      box_walls(notchProperties);
 
       translate([-boxProperties[WallThickness], boxProperties[CornerRadius], -boxProperties[WallThickness]]) {
         cube(size=[boxProperties.x + boxProperties[WallThickness] * 2, bottomNotchDepth - boxProperties[CornerRadius] * 2, 10]);
@@ -186,11 +203,13 @@ module lid(boxProperties) {
   }
 
   // reinforcement
-  box_walls(boxProperties[WallThickness] * 2.1, boxProperties.x, boxProperties.y, boxProperties.z, boxProperties[CornerRadius], boxProperties[CornerRadius]);
+  reinforcementProperties = mutateBoxProperties(boxProperties, wall_thickness = boxProperties[WallThickness] * 2.1);
+  box_walls(reinforcementProperties);
 
   // top
   translate([0, 0, boxProperties.z]) {
-    box_base(boxProperties[WallThickness], boxProperties.x, boxProperties.y, 0, boxProperties[CornerRadius], true);
+    lidTopProperties = mutateBoxProperties(boxProperties, height = 0);
+    box_base(lidTopProperties, true);
   }
 
   if ($children > 0) {
