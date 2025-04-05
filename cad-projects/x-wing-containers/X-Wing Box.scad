@@ -14,10 +14,12 @@ module xwing_box_click_lock(wall_thickness) {
   wall_mounted_snap_lock(tongueDepth = clickLockTongueDepth, wall_thickness = wall_thickness, tolerance = 0.1);
 }
 
+module nothing() {}
+
 module xwing_box(boxProperties) {
   box(boxProperties) {
-    xwing_box_click_lock_tongue(wall_thickness = boxProperties[WallThickness]);
-    xwing_box_click_lock_tongue(wall_thickness = boxProperties[WallThickness]);
+    nothing();
+    nothing();
     xwing_box_click_lock_tongue(wall_thickness = boxProperties[WallThickness]);
     xwing_box_click_lock_tongue(wall_thickness = boxProperties[WallThickness]);
     xwing_box_click_lock(wall_thickness = boxProperties[WallThickness]);
@@ -36,7 +38,7 @@ module xwing_box(boxProperties) {
       }
 
       if (!$preview)
-        boxOuterWallClipShape(boxProperties[WallThickness], boxProperties.x, boxProperties.y, boxProperties.z, boxProperties[CornerRadius]);
+        boxOuterWallClipShape(boxProperties);
     }
   }
 }
