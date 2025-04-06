@@ -81,7 +81,7 @@ module wall_mounted_hinge_tongue (depth = 30, height = 10, wall_thickness = 2, t
   }
 }
 
-function wallMountedSnapLockWidth(tongueDepth = 30, wall_thickness = 2, tolerance = 0.1) = tongueDepth + (wall_thickness * 3 + tolerance) * 2;
+function wallMountedSnapLockWidth(tongueDepth = 30, wall_thickness = 2, tolerance = 0.1) = tongueDepth + (wall_thickness * 6 + tolerance) * 2;
 
 module wall_mounted_snap_lock (tongueDepth = 30, wall_thickness = 2, tolerance = 0.1) {
   height = 10;

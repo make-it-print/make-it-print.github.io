@@ -2,8 +2,7 @@ include <Box Properties.scad>
 use <Box.scad>
 use <X-Wing Box Wall Mounts.scad>
 
-clickLockTongueDepth = 30;
-clickLockDepth = 50;
+clickLockTongueDepth = 30 - 2*3;
 clickLockFingerLipDepth = 30;
 
 module xwing_box_click_lock_tongue(wall_thickness) {
@@ -54,7 +53,7 @@ module xwing_box_lid(boxProperties) {
 }
 
 showBox = true;
-showLid = false;
+showLid = true;
 
 boxProperties = createBoxProperties(width = 214, depth = 214, height = 60, radius = 5, wall_thickness = 2);
 

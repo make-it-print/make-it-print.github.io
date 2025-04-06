@@ -43,7 +43,7 @@ xwing_box(boxProperties) {
         *cube(size=[dials_width, dials_depth, 10]);
         dialsColumnCount = movementDialColumnCount(dials_width);
         dialsWidth = movementDialSurfaceWidth(dialsColumnCount);
-        movement_dial_holder_surface(width = dials_width, depth = dials_depth, inner_wall_width = inner_wall_thickness);
+        movement_dial_holder_surface(width = dials_width, depth = dials_depth, inner_wall_width = 1);
       }
     }
   }

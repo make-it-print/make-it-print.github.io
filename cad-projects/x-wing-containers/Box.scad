@@ -115,8 +115,8 @@ module wall_reinforcement(boxProperties) {
           height = boxProperties[WallThickness] * 2);
         box_walls(reinforcementNegativeProps, top_radius = reinforcementRadius, bottom_radius = reinforcementRadius);
 
-        gapSizeX = boxProperties.x / 2;
-        gapSizeY = boxProperties.y / 2;
+        gapSizeX = boxProperties.x / 2 + boxProperties[WallThickness] * 3;
+        gapSizeY = boxProperties.y / 2 + boxProperties[WallThickness] * 3;
         translate([-boxProperties[WallThickness] - 0.01, (reinforcementDepth - gapSizeY) / 2, 0]) {
           cube(size=[reinforcementWidth + boxProperties[WallThickness] * 2, gapSizeY, 10]);
         }

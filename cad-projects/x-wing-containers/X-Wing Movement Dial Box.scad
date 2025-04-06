@@ -15,9 +15,9 @@ xwing_box(boxProperties) {
   box_inner_width = boxInnerWidth(boxProperties.x, box_wall_thickness);
   box_inner_depth = boxInnerDepth(boxProperties.y, box_wall_thickness);
 
-  movement_dial_holder_surface(width = box_inner_width, depth = box_inner_depth, inner_wall_width = inner_wall_thickness);
+  movement_dial_holder_surface(width = box_inner_width, depth = box_inner_depth, inner_wall_width = 1);
 }
 
-translate([0, boxProperties.y + 10, 0]) {
- lid(boxProperties);  
-}
+//translate([0, boxProperties.y + 10, 0]) {
+// lid(boxProperties);  
+//}
