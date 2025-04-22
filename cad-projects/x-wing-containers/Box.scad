@@ -232,9 +232,9 @@ module lid(boxProperties) {
 
 wall_width = 2;
 inner_wall_width = 1.6;
-width = 30;
-depth = 80;
-height = 10;
+width = 50;
+depth = 120;
+height = 20;
 radius = 5;
 tolerance = 0.2;
 
@@ -282,7 +282,7 @@ if (prod) {
 } 
 else 
 {
-  tongueDepth = 30;
+  tongueDepth = 15;
   fullDepth= 30;
   fingerLipDepth = 10;
   

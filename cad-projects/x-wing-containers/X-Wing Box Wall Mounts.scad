@@ -93,16 +93,22 @@ module wall_mounted_snap_lock (tongueDepth = 30, wall_thickness = 2, tolerance =
     side_fixture_body (fullDepth, height, wall_thickness, tolerance);
 
     translate([-tolerance, 0, 0]) {
-      wall_mounted_hinge_lock_tongue_triangle(thickness + tolerance * 2, tongueDepth + tolerance * 4);
+      wall_mounted_hinge_lock_tongue_triangle(thickness + tolerance * 2, tongueDepth + tolerance * 4, wall_thickness);
     }
   }
 }
 
-module wall_mounted_hinge_lock_tongue_triangle (width, depth, tolerance = 0) {
+module wall_mounted_hinge_lock_tongue_triangle (width, depth, wall_thickness, tolerance = 0) {
   translate([0, depth / 2, 0]) {
     rotate(-90, [0, 0, 1]) {
       triangular_profile(depth + tolerance, depth + tolerance, width + tolerance);
     }
+  }
+
+  tongueHeight = wall_thickness * 2;
+
+  translate([0, -depth / 2 + tongueHeight, 0]) {
+    cube(size=[width + tolerance, depth + tolerance - tongueHeight * 2, tongueHeight * 2]);
   }
 }
 
@@ -112,7 +118,7 @@ module wall_mounted_snap_lock_tongue (tongueDepth = 30, fingerLipDepth = 20, wal
   
   difference() {
     translate([-tolerance, 0, 0]) {
-      wall_mounted_hinge_lock_tongue_triangle(thickness + tolerance, tongueDepth);
+      wall_mounted_hinge_lock_tongue_triangle(thickness + tolerance, tongueDepth, wall_thickness);
     }
 
     translate([-thickness / 2, -tongueDepth, wall_thickness * 2]) {
