@@ -240,14 +240,14 @@ module box_insert(boxProperties) {
   insertProperties = mutateBoxProperties(
       boxProperties,
       width = boxInsertWidth(boxProperties),
-      depth = boxInsertWidth(boxProperties),
+      depth = boxInsertDepth(boxProperties),
       height = 6,
       wall_thickness = 1,
       radius = radius,
       tolerance = boxProperties[Tolerance]);
 
   translate([offset, offset, 0]) {
-    box_walls(insertProperties);    
+    box_walls(insertProperties);
 
     if ($children > 0) {
       childrenOffset = insertProperties[WallThickness];
