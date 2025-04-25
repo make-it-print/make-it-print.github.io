@@ -17,8 +17,8 @@ xwing_box(boxProperties) {
   medium_base_holder_width = mediumBaseHolderSize();
   large_base_holder_width = largeBaseHolderSize();
   
-  box_inner_width = boxInnerWidth(boxProperties.x, boxProperties[WallThickness]);
-  box_inner_depth = boxInnerDepth(boxProperties.y, boxProperties[WallThickness]);
+  box_inner_width = boxInnerWidth(boxProperties);
+  box_inner_depth = boxInnerDepth(boxProperties);
 
   small_base_holders_width = smallBaseHolderWidth(inner_wall_thickness);
 

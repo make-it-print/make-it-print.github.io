@@ -52,8 +52,9 @@ module xwing_box_lid(boxProperties) {
   }
 }
 
-showBox = true;
-showLid = true;
+showBox = false;
+showLid = false;
+showInsert = true;
 
 boxProperties = createBoxProperties(width = 214, depth = 214, height = 60, radius = 5, wall_thickness = 2);
 
@@ -65,4 +66,9 @@ if (showLid) {
   translate([0, 0, 65]) {
     xwing_box_lid(boxProperties);
   }
+}
+
+if (showInsert) {
+  insertProperties = mutateBoxProperties(boxProperties, tolerance = 0.3);
+  box_insert(insertProperties);
 }

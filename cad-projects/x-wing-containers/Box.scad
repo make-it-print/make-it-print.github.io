@@ -145,8 +145,8 @@ module boxOuterWallClipShape(boxProperties) {
   }
 }
 
-function boxInnerWidth(width, wall_thickness = 2) = width - wall_thickness * 2;
-function boxInnerDepth(depth, wall_thickness = 2) = depth - wall_thickness * 2;
+function boxInnerWidth(boxProperties) = boxProperties.x - boxProperties[WallThickness] * 2;
+function boxInnerDepth(boxProperties) = boxProperties.y - boxProperties[WallThickness] * 2;
 
 
 module box(boxProperties) {
@@ -229,6 +229,44 @@ module lid(boxProperties) {
   }
 }
 
+function boxInsertOffset(boxProperties) = boxProperties[WallThickness] + boxProperties[Tolerance];
+function boxInsertWidth(boxProperties) = boxProperties.x - boxInsertOffset(boxProperties) * 2;
+function boxInsertDepth(boxProperties) = boxProperties.y - boxInsertOffset(boxProperties) * 2;
+
+module box_insert(boxProperties) {
+  offset = boxInsertOffset(boxProperties);
+  radius = getRadiusOrMinimum(boxProperties[CornerRadius] - offset, 0.01);
+
+  insertProperties = mutateBoxProperties(
+      boxProperties,
+      width = boxInsertWidth(boxProperties),
+      depth = boxInsertWidth(boxProperties),
+      height = 6,
+      wall_thickness = 1,
+      radius = radius,
+      tolerance = boxProperties[Tolerance]);
+
+  translate([offset, offset, 0]) {
+    box_walls(insertProperties);    
+
+    if ($children > 0) {
+      childrenOffset = insertProperties[WallThickness];
+  
+      difference() {
+        union() {
+          translate([childrenOffset, childrenOffset, 0]) {
+            for(i=[0:$children-1])
+              children(i);  
+          }
+        }
+  
+        if (!$preview)
+          boxOuterWallClipShape(insertProperties);
+      }
+    }
+  }
+}
+
 
 wall_width = 2;
 inner_wall_width = 1.6;
@@ -238,9 +276,10 @@ height = 20;
 radius = 5;
 tolerance = 0.2;
 
-prod = false;
+prod = true;
 showBox = true;
-showLid = true;
+showLid = false;
+showInsert = true;
 
 if (prod) {
   width = 220 - 6;
@@ -268,6 +307,10 @@ if (prod) {
     //translate([0, 0, wall_width]) {
     //  box_walls(wall_width, width, depth, 10, radius, radius + wall_width);
     //}
+  }
+
+  if (showInsert) {
+    #box_insert(properties);
   }
 
   if (showLid)
