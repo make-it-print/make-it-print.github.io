@@ -70,15 +70,21 @@ module movement_dial_holder_separator(inner_wall_width = 1.6, connectorWidth, po
   offset = getOffset(inner_wall_width);
 
   translate([offset, 0, 0]) {
-    movement_dial_holder_separator_part(inner_wall_width, connectorWidth, position == "even" || position == "back", position == "odd" || position == "back");
+    movement_dial_holder_separator_part(
+      inner_wall_width, connectorWidth, 
+      position == "even" || position == "back" || position == "odd|left", 
+      position == "odd" || position == "back" || position == "odd|left"  || position == "odd|right");
   }
 
   translate([width - hole_width/2 - inner_wall_width, 0, 0]) {
-    movement_dial_holder_separator_part(inner_wall_width, connectorWidth, position == "odd" || position == "back", position == "even" || position == "back");
+    movement_dial_holder_separator_part(
+      inner_wall_width, connectorWidth, 
+      position == "odd" || position == "back" || position == "odd|left"  || position == "odd|right", 
+      position == "even" || position == "back" || position == "odd|right");
   }
 }
 
-module movement_dial_holder_side(inner_wall_width = 1.6) {
+module movement_dial_holder_side(inner_wall_width = 1.6, noCutOut) {
   depth = movementDialDepth();
   height = movementDialHeight();
   cutOutHeight = height;
@@ -89,18 +95,20 @@ module movement_dial_holder_side(inner_wall_width = 1.6) {
   difference() {
     cube(size=[inner_wall_width, depth, height]);
 
-    translate([inner_wall_width + 0.001, depth + 0.01, 0]) {
-      rotate(90, [0, 0, 10]) {
-        triangular_profile(cutOutDepth, bottomCutOutHeight + 0.001, inner_wall_width + 0.2, [
-          [0, 0],[-1, 1], [0, 1]
-        ]);
-      }
-
-      translate([0, 0, bottomCutOutHeight]) {
+    if (noCutOut == undef || noCutOut == false) {
+      translate([inner_wall_width + 0.001, depth + 0.01, 0]) {
         rotate(90, [0, 0, 10]) {
-          triangular_profile(cutOutDepth, topCutOutHeight, inner_wall_width + 0.2, [
-            [-1, 0],[0, 0], [0, 1]
+          triangular_profile(cutOutDepth, bottomCutOutHeight + 0.001, inner_wall_width + 0.2, [
+            [0, 0],[-1, 1], [0, 1]
           ]);
+        }
+  
+        translate([0, 0, bottomCutOutHeight]) {
+          rotate(90, [0, 0, 10]) {
+            triangular_profile(cutOutDepth, topCutOutHeight, inner_wall_width + 0.2, [
+              [-1, 0],[0, 0], [0, 1]
+            ]);
+          }
         }
       }
     }
@@ -121,6 +129,8 @@ module movement_dial_holder_even(inner_wall_width = 1.6, connectorWidthLeft, con
     movement_dial_holder_separator(inner_wall_width, position = "even");
   
     offset = getOffset(inner_wall_width);
+    noLeftCutOut = connectorWidthLeft != undef;
+    noRightCutOut = connectorWidthRight != undef;
     connectorWidthLeft = is_undef(connectorWidthLeft) ? offset : connectorWidthLeft;
     connectorWidthRight = is_undef(connectorWidthRight) ? offset : connectorWidthRight;
   
@@ -129,10 +139,10 @@ module movement_dial_holder_even(inner_wall_width = 1.6, connectorWidthLeft, con
     }
   
     translate([offset, inner_wall_width, 0]) {
-      movement_dial_holder_side(inner_wall_width);
+      movement_dial_holder_side(inner_wall_width, noLeftCutOut);
         
       translate([hole_width + inner_wall_width, 0, 0]) {
-        movement_dial_holder_side(inner_wall_width);
+        movement_dial_holder_side(inner_wall_width, noRightCutOut);
   
         translate([inner_wall_width, (depth - inner_wall_width) / 2, 0]) {
           cube(size=[connectorWidthRight, inner_wall_width, height/2]);
@@ -142,19 +152,25 @@ module movement_dial_holder_even(inner_wall_width = 1.6, connectorWidthLeft, con
   }
 }
 
-module movement_dial_holder_odd(inner_wall_width = 1.6, connectorWidth) {
+module movement_dial_holder_odd(inner_wall_width = 1.6, connectorWidth, connectorWidthLeft, connectorWidthRight) {
   union() {
     width = movementDialWidth();
     depth = movementDialDepth();
     height = movementDialHeight();
     hole_width = movementDialHoleWidth();
+    
+    position = connectorWidthLeft != undef ? 
+      "odd|left" : 
+      connectorWidthRight != undef ?
+        "odd|right" :
+        "odd";
   
-    movement_dial_holder_separator(inner_wall_width, position = "odd");
-  
+    movement_dial_holder_separator(inner_wall_width, position = position);
+    
     connectorWidth = is_undef(connectorWidth) ? hole_width - movementDialSeparatorWidth(inner_wall_width) * 2 + inner_wall_width * 4 : connectorWidth;
   
     translate([hole_width/2, inner_wall_width, 0]) {
-      movement_dial_holder_side(inner_wall_width);
+    movement_dial_holder_side(inner_wall_width);
   
       translate([0, (depth - inner_wall_width) / 2, 0]) {
         cube(size=[connectorWidth, inner_wall_width, height/2]);
@@ -207,7 +223,7 @@ module movement_dial_holder_surface(inner_wall_width, width = 214, depth = 214) 
             if (i % 2 == 0) {
               movement_dial_holder_even(inner_wall_width, connectorWidthLeft, connectorWidthRight);
             } else {
-              movement_dial_holder_odd(inner_wall_width);
+              movement_dial_holder_odd(inner_wall_width, undef, connectorWidthLeft, connectorWidthRight);
             }
           }
         }

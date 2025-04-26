@@ -3,8 +3,9 @@ use <X-Wing Movement Dial.scad>
 use <X-Wing Box.scad>
 use <Box.scad>
 
-box_width = 214;
-box_depth = 214;
+production = true;
+box_width = production ? 214 : 110;
+box_depth = production ? 214 : 100;
 height = 40;
 box_wall_thickness = 2;
 inner_wall_thickness = 1.6;
