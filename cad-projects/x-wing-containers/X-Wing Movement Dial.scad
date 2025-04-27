@@ -12,7 +12,7 @@ function cutOutHeight() = 3;
 reinforcementHeight = 0.4;
 topReinforcementHeight = reinforcementHeight * 2;
 
-module movement_dial_holder_separator_part(inner_wall_width = 1.6, connectorWidth, noLeftCutOut, noRightCutOut) {
+module movement_dial_holder_separator_part(inner_wall_width = 1.6, connectorWidth, noLeftCutOut, noRightCutOut, position) {
   height = movementDialHeight();
   separatorWidth = movementDialSeparatorWidth(inner_wall_width);
 
@@ -58,8 +58,15 @@ module movement_dial_holder_separator_part(inner_wall_width = 1.6, connectorWidt
   }
 
   if (!is_undef(connectorWidth)) {
-    translate([(separatorWidth - inner_wall_width) / 2, 0, 0]) {
-      cube(size=[inner_wall_width, connectorWidth, height / 2]);
+    offset = position == "left" ? separatorWidth - inner_wall_width : 0;
+    translate([offset, inner_wall_width, 0]) {
+      cube(size=[inner_wall_width, connectorWidth, height]);
+      translate([0, connectorWidth, height])
+      rotate(-90, [0, 0, 1]) {
+        triangular_profile(connectorWidth + inner_wall_width, connectorWidth + inner_wall_width, inner_wall_width, [
+          [0, 1],[1, 0], [0, 0]
+        ]);
+      }
     }
   }
 }
@@ -73,14 +80,16 @@ module movement_dial_holder_separator(inner_wall_width = 1.6, connectorWidth, po
     movement_dial_holder_separator_part(
       inner_wall_width, connectorWidth, 
       position == "even" || position == "back" || position == "odd|left", 
-      position == "odd" || position == "back" || position == "odd|left"  || position == "odd|right");
+      position == "odd" || position == "back" || position == "odd|left"  || position == "odd|right",
+      "left");
   }
 
   translate([width - hole_width/2 - inner_wall_width, 0, 0]) {
     movement_dial_holder_separator_part(
       inner_wall_width, connectorWidth, 
       position == "odd" || position == "back" || position == "odd|left"  || position == "odd|right", 
-      position == "even" || position == "back" || position == "odd|right");
+      position == "even" || position == "back" || position == "odd|right",
+      "right");
   }
 }
 
