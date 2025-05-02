@@ -137,7 +137,7 @@ module boxOuterWallClipShape(boxProperties) {
       wall_thickness = negativeWallsWidth,
       width = boxProperties.x + negativeWallsWidth * 2, 
       depth = boxProperties.y + negativeWallsWidth * 2, 
-      height = boxProperties.z + boxProperties[WallThickness] * 2,
+      height = 500,
       radius = boxProperties[CornerRadius] + negativeWallsWidth
     );
 
@@ -242,7 +242,7 @@ module box_insert(boxProperties) {
       width = boxInsertWidth(boxProperties),
       depth = boxInsertDepth(boxProperties),
       height = 6,
-      wall_thickness = 1,
+      wall_thickness = boxProperties[InnerWallThickness],
       radius = radius,
       tolerance = boxProperties[Tolerance]);
 

@@ -5,41 +5,58 @@ use <Box Compartment.scad>
 use <X-Wing Ship Base Holder.scad>
 use <X-Wing Movement Dial.scad>
 
-box_width = 214;
-box_depth = 214;
-height = 40;
-box_wall_thickness = 2;
-inner_wall_thickness = 1.6;
+boxProperties = createBoxProperties(
+  width = 214, 
+  depth = 214, 
+  height = 40, 
+  wall_thickness = 2, 
+  tolerance = 0.2, 
+  inner_wall_thickness = 1.6);
 
-boxProperties = createBoxProperties(box_width, box_depth, height, box_wall_thickness);
+//xwing_box(boxProperties);
+box_insert(boxProperties) {
+  box_inner_width = boxInsertWidth(boxProperties);
+  box_inner_depth = boxInsertDepth(boxProperties);
 
-xwing_box(boxProperties) {
-  medium_base_holder_width = mediumBaseHolderSize();
   large_base_holder_width = largeBaseHolderSize();
+  large_base_holder_depth = largeBaseHolderSize() + 9.4;
+
+  small_base_holders_width = smallBaseHolderWidth(boxProperties[InnerWallThickness]);
+
+  medium_base_holder_width = box_inner_width - large_base_holder_width - small_base_holders_width - boxProperties[InnerWallThickness] * 3;
+  medium_base_holder_depth = mediumBaseHolderSize();
+
+  compartmentBaseHeight = 6;
+
   
-  box_inner_width = boxInnerWidth(boxProperties);
-  box_inner_depth = boxInnerDepth(boxProperties);
 
-  small_base_holders_width = smallBaseHolderWidth(inner_wall_thickness);
+  dials_width = box_inner_width - small_base_holders_width - boxProperties[InnerWallThickness];
+  dials_depth = box_inner_depth - large_base_holder_depth - boxProperties[InnerWallThickness];
 
-  dials_width = boxProperties.x - 4 - small_base_holders_width;
-  dials_depth = boxProperties.y - 4 - large_base_holder_width - inner_wall_thickness;
-
-  translate([-inner_wall_thickness, -inner_wall_thickness, 0]) {
-    small_base_holder_surface(smallBaseHolderWidth(inner_wall_thickness) + inner_wall_thickness, box_inner_depth + inner_wall_thickness * 2, wall_thickness = inner_wall_thickness);
+  translate([-boxProperties[InnerWallThickness], -boxProperties[InnerWallThickness], 0]) {
+    small_base_holder_surface(smallBaseHolderWidth(boxProperties[InnerWallThickness]) + boxProperties[InnerWallThickness], box_inner_depth, wall_thickness = boxProperties[InnerWallThickness]);
   
     translate([small_base_holders_width, 0, 0]) {
-      large_base_holder_compartment(depth = large_base_holder_width + 4, wall_thickness = inner_wall_thickness);
+      large_base_holder_compartment(
+        depth = large_base_holder_depth, 
+        wall_thickness = boxProperties[InnerWallThickness], 
+        base_height = compartmentBaseHeight);
   
-      translate([large_base_holder_width + inner_wall_thickness, 0, 0]) {
-        medium_base_holder_compartment(wall_thickness = inner_wall_thickness);
+      translate([large_base_holder_width + boxProperties[InnerWallThickness], 0, 0]) {
+        medium_base_holder_compartment(
+          width = medium_base_holder_width, 
+          wall_thickness = boxProperties[InnerWallThickness], 
+          base_height = compartmentBaseHeight);
       }
   
-      translate([large_base_holder_width + inner_wall_thickness, medium_base_holder_width + inner_wall_thickness, 0]) {
-        box_compartment(medium_base_holder_width, large_base_holder_width - medium_base_holder_width - inner_wall_thickness + 4);
+      translate([large_base_holder_width + boxProperties[InnerWallThickness], medium_base_holder_depth + boxProperties[InnerWallThickness], 0]) {
+        box_compartment(
+          medium_base_holder_width, 
+          large_base_holder_depth - medium_base_holder_depth - boxProperties[InnerWallThickness], 
+          base_height = compartmentBaseHeight);
       }
   
-      translate([inner_wall_thickness, large_base_holder_width + inner_wall_thickness * 2, 0]) {
+      translate([boxProperties[InnerWallThickness], large_base_holder_depth + boxProperties[InnerWallThickness], 0]) {
         *cube(size=[dials_width, dials_depth, 10]);
         dialsColumnCount = movementDialColumnCount(dials_width);
         dialsWidth = movementDialSurfaceWidth(dialsColumnCount);

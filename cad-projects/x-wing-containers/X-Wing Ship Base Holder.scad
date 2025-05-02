@@ -23,10 +23,13 @@ module small_base_holder_surface(width, depth, wall_thickness = 1.6) {
   holder_height = 9;
 
   endOffset = 5;
-  startOffset = holder_depth - endOffset;
 
   row_count = floor((depth - wall_thickness - endOffset) / holder_depth);
   column_count = floor(width / holder_width);
+
+  startOffset = depth - holder_depth * row_count - endOffset;
+
+  *cube(size=[width, depth, 10]);
   
   for(x=[0:1:column_count-1]) {
     translate([holder_width * x, 0, 0]) {
@@ -57,18 +60,21 @@ module small_base_holder_surface(width, depth, wall_thickness = 1.6) {
 function largeBaseHolderSize() = 86;
 function mediumBaseHolderSize() = 68;
 
-module large_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6) {
+function largeBaseHolderWidth(wall_thickness) = boxCompartmentOuterWidth(largeBaseHolderSize(), wall_thickness);
+function largeBaseHolderDepth(wall_thickness) = boxCompartmentOuterDepth(largeBaseHolderSize(), wall_thickness);
+
+module large_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6, base_height = 0) {
   width = is_undef(width) ? largeBaseHolderSize() : width;
   depth = is_undef(depth) ? largeBaseHolderSize() : depth;
 
-  box_compartment(width, depth, height, wall_thickness);
+  box_compartment(width, depth, height, wall_thickness, base_height = base_height);
 }
 
-module medium_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6) {
+module medium_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6, base_height = 0) {
   width = is_undef(width) ? mediumBaseHolderSize() : width;
   depth = is_undef(depth) ? mediumBaseHolderSize() : depth;
 
-  box_compartment(width, depth, height, wall_thickness);
+  box_compartment(width, depth, height, wall_thickness, base_height = base_height);
 }
 
 translate([0, 0, -10]) {
