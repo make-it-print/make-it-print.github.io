@@ -233,7 +233,7 @@ function boxInsertOffset(boxProperties) = boxProperties[WallThickness] + boxProp
 function boxInsertWidth(boxProperties) = boxProperties.x - boxInsertOffset(boxProperties) * 2;
 function boxInsertDepth(boxProperties) = boxProperties.y - boxInsertOffset(boxProperties) * 2;
 
-module box_insert(boxProperties) {
+module box_insert(boxProperties, cutOutSize) {
   offset = boxInsertOffset(boxProperties);
   radius = getRadiusOrMinimum(boxProperties[CornerRadius] - offset, 0.01);
 
@@ -247,7 +247,34 @@ module box_insert(boxProperties) {
       tolerance = boxProperties[Tolerance]);
 
   translate([offset, offset, 0]) {
-    box_walls(insertProperties);
+    difference() {
+      box_walls(insertProperties);
+
+      if (!is_undef(cutOutSize)) {
+        if (cutOutSize[0] > 0) {
+          translate([(insertProperties.x - cutOutSize[0]) / 2, -boxProperties[Tolerance], -boxProperties[Tolerance]]) {
+            cube(size=[
+              cutOutSize[0], 
+              boxProperties[InnerWallThickness] + boxProperties[Tolerance] * 2, 
+              insertProperties.z + boxProperties[Tolerance] * 2]
+            );
+          }
+        }
+
+        if (cutOutSize[1] > 0) {
+          translate([
+            (insertProperties.x - cutOutSize[1]) / 2, 
+            insertProperties.y - insertProperties[WallThickness] - boxProperties[Tolerance], 
+            -boxProperties[Tolerance]]) {
+            cube(size=[
+              cutOutSize[1], 
+              boxProperties[InnerWallThickness] + boxProperties[Tolerance] * 2, 
+              insertProperties.z + boxProperties[Tolerance] * 2]
+            );
+          }
+        }        
+      }
+    }
 
     if ($children > 0) {
       childrenOffset = insertProperties[WallThickness];

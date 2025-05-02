@@ -13,11 +13,11 @@ inner_wall_thickness = 1.6;
 boxProperties = createBoxProperties(box_width, box_depth, height, box_wall_thickness, tolerance = 0.2);
 
 //xwing_box(boxProperties);
-box_insert(boxProperties) {
+box_insert(boxProperties, [200, 0, 0, 0]) {
   box_inner_width = boxInnerWidth(boxProperties);
   box_inner_depth = boxInnerDepth(boxProperties);
 
-  translate([-1 - boxProperties[Tolerance], -1 - boxProperties[Tolerance], 0]) {
+  translate([-boxProperties[InnerWallThickness] - boxProperties[Tolerance], -boxProperties[InnerWallThickness] - boxProperties[Tolerance], 0]) {
     *cube(size=[box_inner_width, box_inner_depth, 10]);
     movement_dial_holder_surface(width = box_inner_width, depth = box_inner_depth, inner_wall_width = 1);
   }
