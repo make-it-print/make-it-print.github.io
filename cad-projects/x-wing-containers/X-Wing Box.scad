@@ -52,11 +52,16 @@ module xwing_box_lid(boxProperties) {
   }
 }
 
-showBox = false;
+showBox = true;
 showLid = false;
-showInsert = true;
+showInsert = false;
 
-boxProperties = createBoxProperties(width = 214, depth = 214, height = 60, radius = 5, wall_thickness = 2);
+// Minis box
+//height = 60;
+// Components box
+height = 41;
+
+boxProperties = createBoxProperties(width = 214, depth = 214, height = height, radius = 5, wall_thickness = 2);
 
 if (showBox) {
   xwing_box(boxProperties);

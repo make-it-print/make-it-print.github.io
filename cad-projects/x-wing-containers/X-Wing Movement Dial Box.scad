@@ -6,6 +6,7 @@ use <Box.scad>
 production = true;
 box_width = production ? 214 : 110;
 box_depth = production ? 214 : 100;
+cutOutWidth = production ? 200 : 0;
 height = 40;
 box_wall_thickness = 2;
 inner_wall_thickness = 1.6;
@@ -13,7 +14,7 @@ inner_wall_thickness = 1.6;
 boxProperties = createBoxProperties(box_width, box_depth, height, box_wall_thickness, tolerance = 0.2);
 
 //xwing_box(boxProperties);
-box_insert(boxProperties, [200, 0, 0, 0]) {
+box_insert(boxProperties, [cutOutWidth, 0, 0, 0]) {
   box_inner_width = boxInnerWidth(boxProperties);
   box_inner_depth = boxInnerDepth(boxProperties);
 
