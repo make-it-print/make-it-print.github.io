@@ -3,7 +3,7 @@ use <X-Wing Movement Dial.scad>
 use <X-Wing Box.scad>
 use <Box.scad>
 
-production = true;
+production = false;
 box_width = production ? 214 : 110;
 box_depth = production ? 214 : 100;
 cutOutWidth = production ? 200 : 0;
@@ -14,7 +14,7 @@ inner_wall_thickness = 1.6;
 boxProperties = createBoxProperties(box_width, box_depth, height, box_wall_thickness, tolerance = 0.2);
 
 //xwing_box(boxProperties);
-box_insert(boxProperties, [cutOutWidth, 0, 0, 0]) {
+box_insert(boxProperties) {
   box_inner_width = boxInnerWidth(boxProperties);
   box_inner_depth = boxInnerDepth(boxProperties);
 
