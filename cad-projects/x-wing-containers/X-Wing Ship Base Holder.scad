@@ -3,10 +3,14 @@ use <Box Compartment.scad>
 function smallBaseHolderWidth(wall_thickness = 1.6) = 41 + wall_thickness;
 function smallBaseHolderDepth(wall_thickness = 1.6) = 9 + wall_thickness;
 
-module small_base_holder(height = 8, wall_thickness = 1.6, depth) {
+module small_base_holder(height = 8, wall_thickness = 1.6, depth, fullWidth) {
   width = smallBaseHolderWidth(wall_thickness);
   depth = is_undef(depth) ? smallBaseHolderDepth(wall_thickness) : depth;
   cornerWidth = 10;
+
+  if (fullWidth == true) {
+    cube(size=[width, wall_thickness, height / 2]);
+  }
 
   box_compartment_corner(height = height, wall_thickness = wall_thickness, width = cornerWidth, depth = depth);
 
@@ -44,7 +48,8 @@ module small_base_holder_surface(width, depth, wall_thickness = 1.6) {
           small_base_holder(
             holder_height, 
             wall_thickness,
-            y == row_count - 1 ? holder_depth + endOffset : holder_depth);
+            y == row_count - 1 ? holder_depth + endOffset : holder_depth,
+            y % 4 == 0);
         }
       }
     }
@@ -63,18 +68,18 @@ function mediumBaseHolderSize() = 68;
 function largeBaseHolderWidth(wall_thickness) = boxCompartmentOuterWidth(largeBaseHolderSize(), wall_thickness);
 function largeBaseHolderDepth(wall_thickness) = boxCompartmentOuterDepth(largeBaseHolderSize(), wall_thickness);
 
-module large_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6, base_height = 0) {
+module large_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6, base_height = 0, cornerSize) {
   width = is_undef(width) ? largeBaseHolderSize() : width;
   depth = is_undef(depth) ? largeBaseHolderSize() : depth;
 
-  box_compartment(width, depth, height, wall_thickness, base_height = base_height);
+  box_compartment(width, depth, height, wall_thickness, base_height = base_height, cornerSize = cornerSize);
 }
 
-module medium_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6, base_height = 0) {
+module medium_base_holder_compartment(width, depth, height = 40, wall_thickness = 1.6, base_height = 0, cornerSize) {
   width = is_undef(width) ? mediumBaseHolderSize() : width;
   depth = is_undef(depth) ? mediumBaseHolderSize() : depth;
 
-  box_compartment(width, depth, height, wall_thickness, base_height = base_height);
+  box_compartment(width, depth, height, wall_thickness, base_height = base_height, cornerSize = cornerSize);
 }
 
 translate([0, 0, -10]) {

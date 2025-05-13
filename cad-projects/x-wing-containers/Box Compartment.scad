@@ -9,6 +9,7 @@ function boxCompartmentOuterDepth(depth, wall_thickness) = depth + wall_thicknes
 module box_compartment(width = 58, depth = 58, height = 40, wall_thickness = 1.6, cornerSize = [15, 15], base_height = 0) {
   width = boxCompartmentOuterWidth(width, wall_thickness);
   depth = boxCompartmentOuterDepth(depth, wall_thickness);
+  cornerSize = is_undef(cornerSize) ? [15, 15] : cornerSize;
   
   box_compartment_corner(height = height, wall_thickness = wall_thickness, width = cornerSize[0], depth = cornerSize[1]);
   cube(size=[width, wall_thickness, base_height]);

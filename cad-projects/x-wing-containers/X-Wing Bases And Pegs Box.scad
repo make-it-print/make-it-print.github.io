@@ -40,20 +40,23 @@ box_insert(boxProperties) {
       large_base_holder_compartment(
         depth = large_base_holder_depth, 
         wall_thickness = boxProperties[InnerWallThickness], 
-        base_height = compartmentBaseHeight);
+        base_height = compartmentBaseHeight,
+        cornerSize = [25, 25]);
   
       translate([large_base_holder_width + boxProperties[InnerWallThickness], 0, 0]) {
         medium_base_holder_compartment(
           width = medium_base_holder_width, 
           wall_thickness = boxProperties[InnerWallThickness], 
-          base_height = compartmentBaseHeight);
+          base_height = compartmentBaseHeight,
+          cornerSize = [25, 25]);
       }
   
       translate([large_base_holder_width + boxProperties[InnerWallThickness], medium_base_holder_depth + boxProperties[InnerWallThickness], 0]) {
         box_compartment(
           medium_base_holder_width, 
           large_base_holder_depth - medium_base_holder_depth - boxProperties[InnerWallThickness], 
-          base_height = compartmentBaseHeight);
+          base_height = compartmentBaseHeight,
+          cornerSize = [25, 20]);
       }
   
       translate([boxProperties[InnerWallThickness], large_base_holder_depth + boxProperties[InnerWallThickness], 0]) {
