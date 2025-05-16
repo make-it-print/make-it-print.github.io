@@ -3,7 +3,7 @@ use <Box.scad>
 use <X-Wing Box.scad>
 use <Box Compartment.scad>
 use <X-Wing Ship Base Holder.scad>
-use <X-Wing Movement Dial.scad>
+use <X-Wing Movement Dial Holder.scad>
 
 boxProperties = createBoxProperties(
   width = 214, 
