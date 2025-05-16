@@ -59,7 +59,7 @@ showInsert = false;
 // Minis box
 //height = 60;
 // Components box
-height = 41;
+height = 43;
 
 boxProperties = createBoxProperties(width = 214, depth = 214, height = height, radius = 5, wall_thickness = 2);
 

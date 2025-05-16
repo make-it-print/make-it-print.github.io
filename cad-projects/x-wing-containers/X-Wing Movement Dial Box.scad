@@ -3,7 +3,7 @@ use <X-Wing Movement Dial.scad>
 use <X-Wing Box.scad>
 use <Box.scad>
 
-production = false;
+production = true;
 box_width = production ? 214 : 110;
 box_depth = production ? 214 : 100;
 cutOutWidth = production ? 200 : 0;
