@@ -11,6 +11,13 @@
       "program": "${file}",
       "console": "integratedTerminal",
       "args": "${command:pickArgs}"
+    },
+    {
+      "name": "Node Terminal",
+      "command": "",
+      "type": "node-terminal",
+      "request": "launch",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
