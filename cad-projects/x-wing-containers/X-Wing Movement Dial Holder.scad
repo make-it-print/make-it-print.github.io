@@ -1,5 +1,5 @@
 use <Box Compartment.scad>
-use <Math.scad>
+use <../Math.scad>
 use <Primitives.scad>
 
 function getOffset(inner_wall_width) = (movementDialWidth() - (movementDialHoleWidth() + inner_wall_width * 2) )/2;
