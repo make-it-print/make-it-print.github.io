@@ -1,23 +1,28 @@
 include <duct-properties.scad>
 use <../Math.scad>
 
+module duct_straight_negative(args) {
+  translate([args[Thickness], args[Thickness], -args[Thickness]])
+    cube([args[Width] - 2 * args[Thickness], args[Height] - 2 * args[Thickness], args[Length] + 2 * args[Thickness]]);
+}
 
 module duct_straight(args) {
   difference() {
     cube([args[Width], args[Height], args[Length]]);
 
-    translate([args[Thickness], args[Thickness], -args[Thickness]])
-      cube([args[Width] - 2 * args[Thickness], args[Height] - 2 * args[Thickness], args[Length] + 2 * args[Thickness]]);
+    duct_straight_negative(args);
   }
 }
 
-module duct_connector(args) {
-  args = mutateDuctProperties(
+function createDuctConnectorProperties(args) = mutateDuctProperties(
     args, 
     args[Width] - (args[Thickness] + args[Tolerance]) * 2, 
     args[Height] - (args[Thickness] + args[Tolerance]) * 2, 
     args[ConnectorLength], 
     1);
+
+module duct_connector(args) {
+  args = createDuctConnectorProperties(args);
   
   duct_straight(args);
 }
@@ -90,7 +95,7 @@ module _duct_90_turn_smooth_negative(args, l) {
 }
 
 
-args = createDuctProperties(40, 100, 250, 2);
+args = createDuctProperties(40, 100, 30, 2);
 //duct_straight(args);
 //
 //translate([args[Thickness] + args[Tolerance], args[Thickness] + args[Tolerance], args[Length] - 15]) {
@@ -98,18 +103,3 @@ args = createDuctProperties(40, 100, 250, 2);
 //}
 
 duct_90_turn_smooth(args);
-
-//duct_straight(mutateDuctProperties(args, length = 50));
-//
-//#translate([0, 0, 50]) {
-//  rotate(45, [0, 1, 0]) {
-//    duct_straight(mutateDuctProperties(args, length = hypotenuse(40, 40)));
-//  }
-//}
-//
-//translate([40, 0, 90]) {
-//  rotate(90, [0, 1, 0]) {
-//    duct_straight(mutateDuctProperties(args, length = 50));
-//  }
-//}
-
