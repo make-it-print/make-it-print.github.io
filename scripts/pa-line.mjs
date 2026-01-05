@@ -1,79 +1,111 @@
 import { writeFileSync } from "node:fs"
 
-const extruderTemp = 230;
-const bedTemp = 60;
-const isFirstLayerPaTest = false;
-const zOffset = 0.1;
-let layerHeight = 0.2;
-const firstLayerPa = 0.05312;
+const extruderTemp = 240;
+const bedTemp = 80;
+const isFirstLayerPaTest = true;
+const zOffset = 0.01;
+let layerHeight = 0.4;
+const firstLayerPa = 0.02;
 
 const yStep = 10;
 const numLines = 20;
-const numLayers = isFirstLayerPaTest ? 1 : 12*2;
+const numLayers = isFirstLayerPaTest ? 1 : 8;
 
 const paStartValue = 0.0; // 0.03
 const paEndValue = 0.05;
 const paStep = (paEndValue - paStartValue) / numLines;
 
 const retractionSettinsgs = {
-  length: 0.5,
-  speed: 1800,
+  length: 0.8,
+  speed: 2400,
 }
 
 const lineSettings = [
+  // {
+  //   // 80mm/s, 0.82lw
+  //   accel: 5000,
+  //   accelToDecel: 1250,
+  //   squareCornerVelocity: 5,
+  //   short: {
+  //     pa: paStartValue,
+  //     extrusion: 2.28284,
+  //     flow: 4800,
+  //   },
+  //   long: {
+  //     pa: paStartValue,
+  //     extrusion: 4.66577,
+  //     flow: 4800,
+  //   }
+  // }
+  // {
+  //   // 80mm/s, 1.16lw
+  //   accel: 5000,
+  //   accelToDecel: 1250,
+  //   squareCornerVelocity: 5,
+  //   short: {
+  //     pa: paStartValue,
+  //     extrusion: 3.19718,
+  //     flow: 4800,
+  //   },
+  //   long: {
+  //     pa: paStartValue,
+  //     extrusion: 6.59122,
+  //     flow: 4800,
+  //   }
+  // }
+  // {
+  //   // 60mm/s, 0.84lw
+  //   accel: 5000,
+  //   accelToDecel: 1250,
+  //   squareCornerVelocity: 5,
+  //   short: {
+  //     pa: paStartValue,
+  //     extrusion: 2.28284,
+  //     flow: 3600,
+  //   },
+  //   long: {
+  //     pa: paStartValue,
+  //     extrusion: 4.66577,
+  //     flow: 3600,
+  //   }
+  // }
   {
-    // 30mm/s
+    // 35mm/s, 0.84lw
     accel: 5000,
-    accelToDecel: 2500,
-    squareCornerVelocity: 9,
+    accelToDecel: 1250,
+    squareCornerVelocity: 5,
     short: {
       pa: paStartValue,
-      extrusion: 0.92324,
-      flow: 30000,
+      extrusion: 2.28284,
+      flow: 2100,
     },
     long: {
       pa: paStartValue,
-      extrusion: 2.64319,
-      flow: 30000,
-    }
-  },
-  {
-    // 10mm/s
-    accel: 5000,
-    accelToDecel: 2500,
-    squareCornerVelocity: 9,
-    short: {
-      pa: paStartValue,
-      extrusion: 0.6888,
-      flow: 600,
-    },
-    long: {
-      pa: paStartValue,
-      extrusion: 1.98239,
-      flow: 600,
+      extrusion: 4.66577,
+      flow: 2100,
     }
   }
 ];
 
 const firstLayerSettings = {
-  accel: 2000,
-  accelToDecel: 1000,
-  squareCornerVelocity: 9,
+  accel: 500,
+  accelToDecel: 125,
+  squareCornerVelocity: 5,
   short: {
     pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
-    extrusion: 0.92324,
-    flow: 3600,
+    extrusion: 2.2471,
+    flow: 7200,
   },
   long: {
     pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
-    extrusion: 2.64319,
-    flow: 3600,
+    extrusion: 4.63003,
+    flow: 7200,
   }
 }
 
 const geometryOffset = [
   {
-    x: 9,
+    x: 60,
     y: 0
   }
   //,
@@ -176,15 +208,15 @@ G1 X${geometryOffset[columnIndex].x} Y${y + geometryOffset[columnIndex].y} F3000
 ; first segment
 SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
 G1 F${currentSettings.short.flow}
-G1 X${geometryOffset[columnIndex].x + 20.5} Y${y + geometryOffset[columnIndex].y} E${currentSettings.short.extrusion}
+G1 X${geometryOffset[columnIndex].x + 20} Y${y + geometryOffset[columnIndex].y} E${currentSettings.short.extrusion}
 ; middle segment
 SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.long.pa}; Override pressure advance value
 G1 F${currentSettings.long.flow}
-G1 X${geometryOffset[columnIndex].x + 79.5} Y${y + geometryOffset[columnIndex].y} E${currentSettings.long.extrusion}
+G1 X${geometryOffset[columnIndex].x + 60} Y${y + geometryOffset[columnIndex].y} E${currentSettings.long.extrusion}
 ; last segment
 SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
 G1 F${currentSettings.short.flow}
-G1 X${geometryOffset[columnIndex].x + 100} Y${y + geometryOffset[columnIndex].y} E${currentSettings.short.extrusion}\n`;
+G1 X${geometryOffset[columnIndex].x + 80} Y${y + geometryOffset[columnIndex].y} E${currentSettings.short.extrusion}\n`;
     }
 
     if (layerIndex > 1) {
