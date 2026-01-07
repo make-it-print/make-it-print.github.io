@@ -2,7 +2,7 @@ import { writeFileSync } from "node:fs"
 
 const extruderTemp = 240;
 const bedTemp = 80;
-const isFirstLayerPaTest = true;
+const isFirstLayerPaTest = false;
 const zOffset = 0.01;
 let layerHeight = 0.4;
 const firstLayerPa = 0.02;
@@ -12,7 +12,7 @@ const numLines = 20;
 const numLayers = isFirstLayerPaTest ? 1 : 8;
 
 const paStartValue = 0.0; // 0.03
-const paEndValue = 0.05;
+const paEndValue = 0.04;
 const paStep = (paEndValue - paStartValue) / numLines;
 
 const retractionSettinsgs = {
@@ -21,68 +21,131 @@ const retractionSettinsgs = {
 }
 
 const lineSettings = [
-  // {
-  //   // 80mm/s, 0.82lw
-  //   accel: 5000,
-  //   accelToDecel: 1250,
-  //   squareCornerVelocity: 5,
-  //   short: {
-  //     pa: paStartValue,
-  //     extrusion: 2.28284,
-  //     flow: 4800,
-  //   },
-  //   long: {
-  //     pa: paStartValue,
-  //     extrusion: 4.66577,
-  //     flow: 4800,
-  //   }
-  // }
+  // Basic PA tests
+  //{
+  //  // 80mm/s, 0.82lw
+  //  accel: 5000,
+  //  accelToDecel: 1250,
+  //  squareCornerVelocity: 1,
+  //  short: {
+  //    pa: paStartValue,
+  //    extrusion: 2.28284,
+  //    testPa: true,
+  //    flow: 4800,
+  //  },
+  //  long: {
+  //    pa: paStartValue,
+  //    extrusion: 4.66577,
+  //    testPa: true,
+  //    flow: 4800,
+  //  }
+  //}
   // {
   //   // 80mm/s, 1.16lw
   //   accel: 5000,
   //   accelToDecel: 1250,
-  //   squareCornerVelocity: 5,
+  //   squareCornerVelocity: 1,
   //   short: {
   //     pa: paStartValue,
   //     extrusion: 3.19718,
+  //     testPa: true,
   //     flow: 4800,
   //   },
   //   long: {
   //     pa: paStartValue,
   //     extrusion: 6.59122,
+  //     testPa: true,
   //     flow: 4800,
   //   }
   // }
+  //{
+  //  // 60mm/s, 0.84lw
+  //  accel: 5000,
+  //  accelToDecel: 1250,
+  //  squareCornerVelocity: 1,
+  //  short: {
+  //    pa: paStartValue,
+  //    extrusion: 2.28284,
+  //    testPa: true,
+  //    flow: 3600,
+  //  },
+  //  long: {
+  //    pa: paStartValue,
+  //    extrusion: 4.66577,
+  //    testPa: true,
+  //    flow: 3600,
+  //  }
+  //}
+  //{
+  //  // 35mm/s, 0.84lw
+  //  accel: 5000,
+  //  accelToDecel: 1250,
+  //  squareCornerVelocity: 1,
+  //  short: {
+  //    pa: paStartValue,
+  //    extrusion: 2.28284,
+  //    testPa: true,
+  //    flow: 2100,
+  //  },
+  //  long: {
+  //    pa: paStartValue,
+  //    extrusion: 4.66577,
+  //    testPa: true,
+  //    flow: 2100,
+  //  }
+  //}
   // {
-  //   // 60mm/s, 0.84lw
+  //   // 15mm/s, 0.84lw
   //   accel: 5000,
   //   accelToDecel: 1250,
-  //   squareCornerVelocity: 5,
+  //   squareCornerVelocity: 1,
   //   short: {
   //     pa: paStartValue,
   //     extrusion: 2.28284,
-  //     flow: 3600,
+  //     testPa: true,
+  //     flow: 900,
   //   },
   //   long: {
   //     pa: paStartValue,
   //     extrusion: 4.66577,
-  //     flow: 3600,
+  //     testPa: true,
+  //     flow: 900,
+  //   }
+  // }
+  // {
+  //   // 35-80-35mm/s, 0.82lw
+  //   accel: 5000,
+  //   accelToDecel: 1250,
+  //   squareCornerVelocity: 1,
+  //   short: {
+  //     pa: paStartValue,
+  //     extrusion: 2.28284,
+  //     testPa: true,
+  //     flow: 2100,
+  //   },
+  //   long: {
+  //     pa: 0.02999,
+  //     extrusion: 4.66577,
+  //     testPa: false,
+  //     flow: 4800,
   //   }
   // }
   {
-    // 35mm/s, 0.84lw
+    // 35-80-35mm/s, 0.82lw
     accel: 5000,
     accelToDecel: 1250,
-    squareCornerVelocity: 5,
+    squareCornerVelocity: 1,
     short: {
-      pa: paStartValue,
+      pa: 0,
       extrusion: 2.28284,
-      flow: 2100,
+      testPa: false,
+      flow: 600,
     },
     long: {
-      pa: paStartValue,
+      pa: 0.02999,
       extrusion: 4.66577,
-      flow: 2100,
+      testPa: true,
+      flow: 4800,
     }
   }
 ];
@@ -182,14 +245,20 @@ G1 E${retractionSettinsgs.length} F${retractionSettinsgs.speed}\n`;
 
   if (layerIndex > 1) {
     for (let columnIndex = 0; columnIndex < geometryOffset.length; columnIndex++) {
-      lineSettings[columnIndex].short.pa = paStartValue;
-      lineSettings[columnIndex].long.pa = paStartValue;
+      if (lineSettings[columnIndex].short.testPa === true)
+        lineSettings[columnIndex].short.pa = paStartValue;
+
+      if (lineSettings[columnIndex].long.testPa === true)
+        lineSettings[columnIndex].long.pa = paStartValue;
     }
   }
 
   if (isFirstLayerPaTest) {
-    firstLayerSettings.short.pa = paStartValue;
-    firstLayerSettings.long.pa = paStartValue;
+    if (lineSettings[columnIndex].short.testPa === true)
+      firstLayerSettings.short.pa = paStartValue;
+
+    if (lineSettings[columnIndex].long.testPa === true)
+      firstLayerSettings.long.pa = paStartValue;
   }
 
   for (let rowIndex = 1; rowIndex <= numLines; rowIndex++) {
@@ -221,14 +290,20 @@ G1 X${geometryOffset[columnIndex].x + 80} Y${y + geometryOffset[columnIndex].y} 
 
     if (layerIndex > 1) {
       for (let columnIndex = 0; columnIndex < geometryOffset.length; columnIndex++) {
-        lineSettings[columnIndex].short.pa += paStep;
-        lineSettings[columnIndex].long.pa += paStep;
+        if (lineSettings[columnIndex].short.testPa === true)
+          lineSettings[columnIndex].short.pa += paStep;
+
+        if (lineSettings[columnIndex].long.testPa === true)
+          lineSettings[columnIndex].long.pa += paStep;
       }
     }
 
     if (isFirstLayerPaTest) {
-      firstLayerSettings.short.pa += paStep;
-      firstLayerSettings.long.pa += paStep;
+      if (lineSettings[columnIndex].short.testPa === true)
+        firstLayerSettings.short.pa += paStep;
+
+      if (lineSettings[columnIndex].long.testPa === true)
+        firstLayerSettings.long.pa += paStep;
     }
   }
   
