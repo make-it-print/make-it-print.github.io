@@ -10,6 +10,8 @@ const firstLayerPa = 0.02;
 const yStep = 10;
 const numLines = 20;
 const numLayers = isFirstLayerPaTest ? 1 : 8;
+const lineWidth = 0.84;
+const wallCount = 3;
 
 const paStartValue = 0.0; // 0.03
 const paEndValue = 0.04;
@@ -18,6 +20,40 @@ const paStep = (paEndValue - paStartValue) / numLines;
 const retractionSettinsgs = {
   length: 0.8,
   speed: 2400,
+}
+
+const line20mm = {
+  extrusion: 2.28284,
+  length: 20
+};
+
+const line40mm = {
+  extrusion: 4.66577,
+  length: 40
+};
+
+const line50mm = {
+  extrusion: 5.85723,
+  length: 50
+};
+
+const geometry = {
+  short: line50mm,
+  long: line50mm,
+}
+
+const firstLayerSettings = {
+  accel: 500,
+  accelToDecel: 125,
+  squareCornerVelocity: 5,
+  short: {
+    pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
+    flow: 7200,
+  },
+  long: {
+    pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
+    flow: 7200,
+  }
 }
 
 const lineSettings = [
@@ -29,13 +65,11 @@ const lineSettings = [
   //  squareCornerVelocity: 1,
   //  short: {
   //    pa: paStartValue,
-  //    extrusion: 2.28284,
   //    testPa: true,
   //    flow: 4800,
   //  },
   //  long: {
   //    pa: paStartValue,
-  //    extrusion: 4.66577,
   //    testPa: true,
   //    flow: 4800,
   //  }
@@ -47,13 +81,11 @@ const lineSettings = [
   //   squareCornerVelocity: 1,
   //   short: {
   //     pa: paStartValue,
-  //     extrusion: 3.19718,
   //     testPa: true,
   //     flow: 4800,
   //   },
   //   long: {
   //     pa: paStartValue,
-  //     extrusion: 6.59122,
   //     testPa: true,
   //     flow: 4800,
   //   }
@@ -65,13 +97,11 @@ const lineSettings = [
   //  squareCornerVelocity: 1,
   //  short: {
   //    pa: paStartValue,
-  //    extrusion: 2.28284,
   //    testPa: true,
   //    flow: 3600,
   //  },
   //  long: {
   //    pa: paStartValue,
-  //    extrusion: 4.66577,
   //    testPa: true,
   //    flow: 3600,
   //  }
@@ -83,13 +113,11 @@ const lineSettings = [
   //  squareCornerVelocity: 1,
   //  short: {
   //    pa: paStartValue,
-  //    extrusion: 2.28284,
   //    testPa: true,
   //    flow: 2100,
   //  },
   //  long: {
   //    pa: paStartValue,
-  //    extrusion: 4.66577,
   //    testPa: true,
   //    flow: 2100,
   //  }
@@ -101,13 +129,11 @@ const lineSettings = [
   //   squareCornerVelocity: 1,
   //   short: {
   //     pa: paStartValue,
-  //     extrusion: 2.28284,
   //     testPa: true,
   //     flow: 900,
   //   },
   //   long: {
   //     pa: paStartValue,
-  //     extrusion: 4.66577,
   //     testPa: true,
   //     flow: 900,
   //   }
@@ -119,14 +145,28 @@ const lineSettings = [
   //   squareCornerVelocity: 1,
   //   short: {
   //     pa: paStartValue,
-  //     extrusion: 2.28284,
   //     testPa: true,
   //     flow: 2100,
   //   },
   //   long: {
   //     pa: 0.02999,
-  //     extrusion: 4.66577,
   //     testPa: false,
+  //     flow: 4800,
+  //   }
+  // }
+  // {
+  //   // 35-80-35mm/s, 0.82lw
+  //   accel: 5000,
+  //   accelToDecel: 1250,
+  //   squareCornerVelocity: 1,
+  //   short: {
+  //     pa: 0,
+  //     testPa: false,
+  //     flow: 600,
+  //   },
+  //   long: {
+  //     pa: 0.02999,
+  //     testPa: true,
   //     flow: 4800,
   //   }
   // }
@@ -136,39 +176,21 @@ const lineSettings = [
     accelToDecel: 1250,
     squareCornerVelocity: 1,
     short: {
-      pa: 0,
-      extrusion: 2.28284,
-      testPa: false,
-      flow: 600,
+      pa: paStartValue,
+      testPa: true,
+      flow: 4800,
     },
     long: {
-      pa: 0.02999,
-      extrusion: 4.66577,
+      pa: paStartValue,
       testPa: true,
       flow: 4800,
     }
   }
 ];
 
-const firstLayerSettings = {
-  accel: 500,
-  accelToDecel: 125,
-  squareCornerVelocity: 5,
-  short: {
-    pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
-    extrusion: 2.2471,
-    flow: 7200,
-  },
-  long: {
-    pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
-    extrusion: 4.63003,
-    flow: 7200,
-  }
-}
-
 const geometryOffset = [
   {
-    x: 60,
+    x: 30,
     y: 0
   }
   //,
@@ -277,15 +299,15 @@ G1 X${geometryOffset[columnIndex].x} Y${y + geometryOffset[columnIndex].y} F3000
 ; first segment
 SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
 G1 F${currentSettings.short.flow}
-G1 X${geometryOffset[columnIndex].x + 20} Y${y + geometryOffset[columnIndex].y} E${currentSettings.short.extrusion}
+G1 X${geometryOffset[columnIndex].x + geometry.short.length} Y${y + geometryOffset[columnIndex].y} E${geometry.short.extrusion}
 ; middle segment
 SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.long.pa}; Override pressure advance value
 G1 F${currentSettings.long.flow}
-G1 X${geometryOffset[columnIndex].x + 60} Y${y + geometryOffset[columnIndex].y} E${currentSettings.long.extrusion}
+G1 X${geometryOffset[columnIndex].x + geometry.short.length + geometry.long.length} Y${y + geometryOffset[columnIndex].y} E${geometry.long.extrusion}
 ; last segment
 SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
 G1 F${currentSettings.short.flow}
-G1 X${geometryOffset[columnIndex].x + 80} Y${y + geometryOffset[columnIndex].y} E${currentSettings.short.extrusion}\n`;
+G1 X${geometryOffset[columnIndex].x + geometry.short.length * 2 + geometry.long.length} Y${y + geometryOffset[columnIndex].y} E${geometry.short.extrusion}\n`;
     }
 
     if (layerIndex > 1) {
