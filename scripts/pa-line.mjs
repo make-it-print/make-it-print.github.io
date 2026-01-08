@@ -2,20 +2,20 @@ import { writeFileSync } from "node:fs"
 
 const extruderTemp = 240;
 const bedTemp = 80;
-const isFirstLayerPaTest = false;
+const isFirstLayerPaTest = true;
 const zOffset = 0.01;
 let layerHeight = 0.4;
 const firstLayerPa = 0.02;
 
 const yStep = 10;
-const numLines = 20;
+const numTests = 20;
 const numLayers = isFirstLayerPaTest ? 1 : 8;
 const lineWidth = 0.84;
-const wallCount = 3;
+const wallCount = 2;
 
 const paStartValue = 0.0; // 0.03
 const paEndValue = 0.04;
-const paStep = (paEndValue - paStartValue) / numLines;
+const paStep = (paEndValue - paStartValue) / numTests;
 
 const retractionSettinsgs = {
   length: 0.8,
@@ -37,6 +37,13 @@ const line50mm = {
   length: 50
 };
 
+
+const speed120mmps = 7200;
+const speed80mmps = 4800;
+const speed60mmps = 3600;
+const speed35mmps = 2100;
+const speed15mmps = 900;
+
 const geometry = {
   short: line50mm,
   long: line50mm,
@@ -48,142 +55,30 @@ const firstLayerSettings = {
   squareCornerVelocity: 5,
   short: {
     pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
-    flow: 7200,
+    testPa: isFirstLayerPaTest? true : false,
+    flow: speed120mmps,
   },
   long: {
     pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
-    flow: 7200,
+    testPa: isFirstLayerPaTest ? true : false,
+    flow: speed120mmps,
   }
 }
 
 const lineSettings = [
-  // Basic PA tests
-  //{
-  //  // 80mm/s, 0.82lw
-  //  accel: 5000,
-  //  accelToDecel: 1250,
-  //  squareCornerVelocity: 1,
-  //  short: {
-  //    pa: paStartValue,
-  //    testPa: true,
-  //    flow: 4800,
-  //  },
-  //  long: {
-  //    pa: paStartValue,
-  //    testPa: true,
-  //    flow: 4800,
-  //  }
-  //}
-  // {
-  //   // 80mm/s, 1.16lw
-  //   accel: 5000,
-  //   accelToDecel: 1250,
-  //   squareCornerVelocity: 1,
-  //   short: {
-  //     pa: paStartValue,
-  //     testPa: true,
-  //     flow: 4800,
-  //   },
-  //   long: {
-  //     pa: paStartValue,
-  //     testPa: true,
-  //     flow: 4800,
-  //   }
-  // }
-  //{
-  //  // 60mm/s, 0.84lw
-  //  accel: 5000,
-  //  accelToDecel: 1250,
-  //  squareCornerVelocity: 1,
-  //  short: {
-  //    pa: paStartValue,
-  //    testPa: true,
-  //    flow: 3600,
-  //  },
-  //  long: {
-  //    pa: paStartValue,
-  //    testPa: true,
-  //    flow: 3600,
-  //  }
-  //}
-  //{
-  //  // 35mm/s, 0.84lw
-  //  accel: 5000,
-  //  accelToDecel: 1250,
-  //  squareCornerVelocity: 1,
-  //  short: {
-  //    pa: paStartValue,
-  //    testPa: true,
-  //    flow: 2100,
-  //  },
-  //  long: {
-  //    pa: paStartValue,
-  //    testPa: true,
-  //    flow: 2100,
-  //  }
-  //}
-  // {
-  //   // 15mm/s, 0.84lw
-  //   accel: 5000,
-  //   accelToDecel: 1250,
-  //   squareCornerVelocity: 1,
-  //   short: {
-  //     pa: paStartValue,
-  //     testPa: true,
-  //     flow: 900,
-  //   },
-  //   long: {
-  //     pa: paStartValue,
-  //     testPa: true,
-  //     flow: 900,
-  //   }
-  // }
-  // {
-  //   // 35-80-35mm/s, 0.82lw
-  //   accel: 5000,
-  //   accelToDecel: 1250,
-  //   squareCornerVelocity: 1,
-  //   short: {
-  //     pa: paStartValue,
-  //     testPa: true,
-  //     flow: 2100,
-  //   },
-  //   long: {
-  //     pa: 0.02999,
-  //     testPa: false,
-  //     flow: 4800,
-  //   }
-  // }
-  // {
-  //   // 35-80-35mm/s, 0.82lw
-  //   accel: 5000,
-  //   accelToDecel: 1250,
-  //   squareCornerVelocity: 1,
-  //   short: {
-  //     pa: 0,
-  //     testPa: false,
-  //     flow: 600,
-  //   },
-  //   long: {
-  //     pa: 0.02999,
-  //     testPa: true,
-  //     flow: 4800,
-  //   }
-  // }
   {
-    // 35-80-35mm/s, 0.82lw
     accel: 5000,
     accelToDecel: 1250,
     squareCornerVelocity: 1,
     short: {
       pa: paStartValue,
       testPa: true,
-      flow: 4800,
+      flow: speed15mmps,
     },
     long: {
-      pa: paStartValue,
-      testPa: true,
-      flow: 4800,
+      pa: 0.0344995,
+      testPa: false,
+      flow: speed35mmps,
     }
   }
 ];
@@ -276,14 +171,32 @@ G1 E${retractionSettinsgs.length} F${retractionSettinsgs.speed}\n`;
   }
 
   if (isFirstLayerPaTest) {
-    if (lineSettings[columnIndex].short.testPa === true)
-      firstLayerSettings.short.pa = paStartValue;
-
-    if (lineSettings[columnIndex].long.testPa === true)
-      firstLayerSettings.long.pa = paStartValue;
+    firstLayerSettings.short.pa = paStartValue;
+    firstLayerSettings.long.pa = paStartValue;
   }
 
-  for (let rowIndex = 1; rowIndex <= numLines; rowIndex++) {
+  function travel(x, y) {
+    gcode += `SET_VELOCITY_LIMIT ACCEL=12000 ACCEL_TO_DECEL=9600 SQUARE_CORNER_VELOCITY=12
+G1 X${x} Y${y} F30000\n`;
+  }
+
+  function drawTestWall(currentSettings, geometry, startX, startY, y) {
+    gcode += `SET_VELOCITY_LIMIT ACCEL=${currentSettings.accel} ACCEL_TO_DECEL=${currentSettings.accelToDecel} SQUARE_CORNER_VELOCITY=${currentSettings.squareCornerVelocity}
+; first segment
+SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
+G1 F${currentSettings.short.flow}
+G1 X${startX + geometry.short.length} Y${y + startY} E${geometry.short.extrusion}
+; middle segment
+SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.long.pa}; Override pressure advance value
+G1 F${currentSettings.long.flow}
+G1 X${startX + geometry.short.length + geometry.long.length} Y${y + startY} E${geometry.long.extrusion}
+; last segment
+SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
+G1 F${currentSettings.short.flow}
+G1 X${startX + geometry.short.length * 2 + geometry.long.length} Y${y + startY} E${geometry.short.extrusion}\n`;
+  }
+
+  for (let rowIndex = 1; rowIndex <= numTests; rowIndex++) {
     const y = yStep * rowIndex;
     gcode += `; line #${rowIndex}\n`;
 
@@ -291,23 +204,17 @@ G1 E${retractionSettinsgs.length} F${retractionSettinsgs.speed}\n`;
       const currentSettings = layerIndex === 1 ? firstLayerSettings : lineSettings[columnIndex];
 
       if (rowIndex > 1 || columnIndex > 0) {
-        gcode += `SET_VELOCITY_LIMIT ACCEL=12000 ACCEL_TO_DECEL=9600 SQUARE_CORNER_VELOCITY=12
-G1 X${geometryOffset[columnIndex].x} Y${y + geometryOffset[columnIndex].y} F30000\n`;
+        travel(geometryOffset[columnIndex].x, y + geometryOffset[columnIndex].y);
       }
 
-      gcode += `SET_VELOCITY_LIMIT ACCEL=${currentSettings.accel} ACCEL_TO_DECEL=${currentSettings.accelToDecel} SQUARE_CORNER_VELOCITY=${currentSettings.squareCornerVelocity}
-; first segment
-SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
-G1 F${currentSettings.short.flow}
-G1 X${geometryOffset[columnIndex].x + geometry.short.length} Y${y + geometryOffset[columnIndex].y} E${geometry.short.extrusion}
-; middle segment
-SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.long.pa}; Override pressure advance value
-G1 F${currentSettings.long.flow}
-G1 X${geometryOffset[columnIndex].x + geometry.short.length + geometry.long.length} Y${y + geometryOffset[columnIndex].y} E${geometry.long.extrusion}
-; last segment
-SET_PRESSURE_ADVANCE ADVANCE=${currentSettings.short.pa}; Override pressure advance value
-G1 F${currentSettings.short.flow}
-G1 X${geometryOffset[columnIndex].x + geometry.short.length * 2 + geometry.long.length} Y${y + geometryOffset[columnIndex].y} E${geometry.short.extrusion}\n`;
+      for (let wallIndex = 0; wallIndex < wallCount; wallIndex++) {
+        if (wallIndex > 0) {
+          travel(geometryOffset[columnIndex].x, y + geometryOffset[columnIndex].y + wallIndex * lineWidth);
+        }
+
+        gcode += `; line #${rowIndex} wall #${wallIndex}\n`;
+        drawTestWall(currentSettings, geometry, geometryOffset[columnIndex].x, geometryOffset[columnIndex].y, y + wallIndex * lineWidth);          
+      }
     }
 
     if (layerIndex > 1) {
@@ -321,11 +228,8 @@ G1 X${geometryOffset[columnIndex].x + geometry.short.length * 2 + geometry.long.
     }
 
     if (isFirstLayerPaTest) {
-      if (lineSettings[columnIndex].short.testPa === true)
-        firstLayerSettings.short.pa += paStep;
-
-      if (lineSettings[columnIndex].long.testPa === true)
-        firstLayerSettings.long.pa += paStep;
+      firstLayerSettings.short.pa += paStep;
+      firstLayerSettings.long.pa += paStep;
     }
   }
   
