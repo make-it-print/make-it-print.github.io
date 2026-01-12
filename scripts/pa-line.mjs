@@ -39,6 +39,7 @@ const line50mm = {
 
 
 const speed120mmps = 7200;
+const speed100mmps = 6000;
 const speed80mmps = 4800;
 const speed60mmps = 3600;
 const speed35mmps = 2100;
@@ -56,12 +57,12 @@ const firstLayerSettings = {
   short: {
     pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
     testPa: isFirstLayerPaTest? true : false,
-    flow: speed120mmps,
+    flow: speed100mmps,
   },
   long: {
     pa: isFirstLayerPaTest ? paStartValue : firstLayerPa,
     testPa: isFirstLayerPaTest ? true : false,
-    flow: speed120mmps,
+    flow: speed100mmps,
   }
 }
 
