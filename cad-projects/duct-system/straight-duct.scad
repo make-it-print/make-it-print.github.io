@@ -21,6 +21,12 @@ function createDuctConnectorProperties(args) = mutateDuctProperties(
     args[ConnectorLength], 
     1);
 
+function createDuctCapProperties(args) = mutateDuctProperties(
+    args, 
+    args[Width] + args[Thickness] * 2 + args[Tolerance] * 2, 
+    args[Height] + args[Thickness] * 2 + args[Tolerance] * 2, 
+    args[ConnectorLength]);
+
 module duct_connector(args) {
   args = createDuctConnectorProperties(args);
   
@@ -94,12 +100,45 @@ module _duct_90_turn_smooth_negative(args, l) {
     }
 }
 
+module _duct_straight_with_cap(args, cap_width = 4) {
+  difference() {
+    cube([args[Width], args[Height], args[Thickness]]);
+    
+    translate([cap_width, cap_width, -1]) {
+      cube([args[Width] - cap_width * 2, args[Height] - cap_width * 2, args[Thickness] + 2]);
+      
+    }
+  }
+
+  duct_straight(args);
+}
+
+module duct_backdraft_damper(args) {
+  args = createDuctConnectorProperties(args);
+  offset = 4;
+  
+  _duct_straight_with_cap(args, offset);
+}
+
+module duct_cap(args) {
+  args = createDuctCapProperties(args);
+  offset = 5;
+  
+  _duct_straight_with_cap(args, offset);
+}
+
 
 args = createDuctProperties(40, 100, 30, 2);
+
+//duct_backdraft_damper(args);
+//duct_cap(args);
+
 //duct_straight(args);
 //
 //translate([args[Thickness] + args[Tolerance], args[Thickness] + args[Tolerance], args[Length] - 15]) {
 //  duct_connector(args);
 //}
 
-duct_90_turn_smooth(args);
+// duct_90_turn_smooth(args);
+
+duct_straight(mutateDuctProperties(args, length=110));

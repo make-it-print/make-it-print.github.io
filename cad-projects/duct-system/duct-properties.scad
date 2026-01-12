@@ -5,7 +5,9 @@ Thickness = 3;
 Tolerance = 4;
 ConnectorLength = 5;
 
-function createDuctProperties(width = 214, height = 214, length = 60, thickness = 2, tolerance = 0.1, connectorLength = 30) = [width, height, length, thickness, tolerance, connectorLength];
+$fn = $preview ? 16 : 128;
+
+function createDuctProperties(width = 40, height = 100, length = 30, thickness = 2, tolerance = 0.1, connectorLength = 30) = [width, height, length, thickness, tolerance, connectorLength];
 
 function mutateDuctProperties(ductProperties, width, height, length, thickness, tolerance, connectorLength) = [
   is_undef(width) ? ductProperties[Width] : width,
